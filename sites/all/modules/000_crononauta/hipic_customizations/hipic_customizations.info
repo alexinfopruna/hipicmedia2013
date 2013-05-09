@@ -1,0 +1,5 @@
+name = Hipicmedia customizations
+description = Hipicmedia customizations made by Crononauta
+version = "7.x-1.0"
+core = 7.x
+package = Crononauta

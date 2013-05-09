@@ -1,0 +1,14 @@
+*******MEDIA
+
+Estadístiques cercador
+
+**MARKET
+Market sense limit d'anuncis
+Despublicar aplaçat
+
+
+
+*******PORTAL
+
+Adreça anunci retallada + tooltip sencera
+Client pot marcar 5 sectors màx.

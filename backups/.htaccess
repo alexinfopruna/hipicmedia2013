@@ -1,0 +1,4 @@
+AuthUserFile /kunden/homepages/23/d415555176/htdocs/backups/.httpd-passwd 
+AuthType Basic
+AuthName "Auth needed"
+Require valid-user

@@ -1,0 +1,162 @@
+diff --git a/entity_translation.admin.inc b/entity_translation.admin.inc
+index 8020abb..da22048 100644
+--- a/entity_translation.admin.inc
++++ b/entity_translation.admin.inc
+@@ -52,17 +52,10 @@ function entity_translation_admin_form_submit($form, $form_state) {
+ /**
+  * Translations overview menu callback.
+  */
+-function entity_translation_overview($entity_type, $entity) {
++function entity_translation_overview($entity_type, $entity, $callback = NULL) {
+   // Entity translation and node translation share the same system path.
+-  if (entity_translation_node($entity_type, $entity)) {
+-    if (module_exists('i18n_node')) {
+-      module_load_include('inc', 'i18n_node', 'i18n_node.pages');
+-      return i18n_node_translation_overview($entity);
+-    }
+-    else {
+-      module_load_include('inc', 'translation', 'translation.pages');
+-      return translation_node_overview($entity);
+-    }
++  if ($callback && entity_translation_node($entity_type, $entity)) {
++    return entity_translation_overview_callback($callback, $entity);
+   }
+ 
+   $handler = entity_translation_get_handler($entity_type, $entity);
+@@ -167,6 +160,19 @@ function entity_translation_overview($entity_type, $entity) {
+ }
+ 
+ /**
++ * Call the appropriate translation overview callback.
++ */
++function entity_translation_overview_callback($callback, $entity) {
++  if (module_exists($callback['module'])) {
++    if (isset($callback['file'])) {
++      $path = isset($callback['file path']) ? $callback['file path'] : drupal_get_path('module', $callback['module']);
++      require_once DRUPAL_ROOT . '/' . $path . '/' . $callback['file'];
++    }
++    return $callback['page callback']($entity);
++  }
++}
++
++/**
+  * Return the appropriate entity label for the given language.
+  */
+ function _entity_translation_label($entity_type, $entity, $langcode = NULL) {
+diff --git a/entity_translation.module b/entity_translation.module
+index 053d39d..fb62c51 100644
+--- a/entity_translation.module
++++ b/entity_translation.module
+@@ -120,14 +120,22 @@ function entity_translation_enabled($entity_type, $skip_handler = FALSE) {
+ }
+ 
+ /**
+- * Implements hook_menu().
++ * Implements hook_menu_alter().
+  */
+-function entity_translation_menu() {
++function entity_translation_menu_alter(&$items) {
++  $backup = array();
++
++  // If entity translation information is being rebuilt we must not proceed to
++  // avoid recursion.
++  if (!empty($GLOBALS['entity_translation_info_building'])) {
++    return;
++  }
++
+   // Create tabs for all possible entity types.
+   foreach (entity_get_info() as $entity_type => $info) {
+     // Menu is rebuilt while determining entity translation base paths and
+     // callbacks so we might not have them available yet.
+-    if (empty($GLOBALS['entity_translation_info_building']) && entity_translation_enabled($entity_type)) {
++    if (entity_translation_enabled($entity_type)) {
+       // Extract informations from the bundle description.
+       $path = $info['translation']['entity_translation']['base path'];
+       $keys = array('theme callback', 'theme arguments', 'access callback', 'access arguments', 'load arguments');
+@@ -135,12 +143,18 @@ function entity_translation_menu() {
+ 
+       $item += array(
+         'file' => 'entity_translation.admin.inc',
++        'module' => 'entity_translation',
+       );
+ 
+       $entity_position = count(explode('/', $path)) - 1;
+       $source_position = $entity_position + 4;
+       $language_position = $entity_position + 3;
+ 
++      // Backup existing values for the translate overview page.
++      if (isset($items["$path/translate"])) {
++        $backup[$entity_type] = $items["$path/translate"];
++      }
++
+       $items["$path/translate"] = array(
+         'title' => 'Translate',
+         'page callback' => 'entity_translation_overview',
+@@ -188,7 +202,10 @@ function entity_translation_menu() {
+     'page arguments' => array('entity_translation_admin_form'),
+     'access arguments' => array('administer entity translation'),
+     'file' => 'entity_translation.admin.inc',
+-   );
++  );
++
++  // Node-specific menu alterations.
++  entity_translation_node_menu_alter($items, $backup);
+ 
+   return $items;
+ }
+diff --git a/entity_translation.node.inc b/entity_translation.node.inc
+index 0fcd431..5cf88a7 100644
+--- a/entity_translation.node.inc
++++ b/entity_translation.node.inc
+@@ -33,26 +33,43 @@ function entity_translation_node($entity_type, $node) {
+ }
+ 
+ /**
+- * Implements hook_menu_alter().
++ * Node-specific menu alterations.
+  */
+-function entity_translation_menu_alter(&$items) {
+-  if (module_exists('i18n_node')) {
+-    $items['node/%node/translate']['page callback'] = 'entity_translation_overview';
+-    $items['node/%node/translate']['file'] = 'entity_translation.admin.inc';
+-    $items['node/%node/translate']['module'] = 'entity_translation';
++function entity_translation_node_menu_alter(&$items, $backup) {
++  if (isset($backup['node'])) {
++    $item = $backup['node'];
++    // Preserve the menu router item defined by other modules.
++    $callback['page callback'] = $item['page callback'];
++    $callback['file'] = $item['file'];
++    $callback['module'] = $item['module'];
++    $access_arguments = array_merge(array(1, $item['access callback']), $item['access arguments']);
+   }
++  else {
++    $callback = FALSE;
++    $access_arguments = array(1);
++  }
++
++  $items['node/%node/translate']['page callback'] = 'entity_translation_overview';
++  $items['node/%node/translate']['page arguments'] = array('node', 1, $callback);
++  $items['node/%node/translate']['access arguments'] = $access_arguments;
++  $items['node/%node/translate']['access callback'] = 'entity_translation_node_tab_access';
++  $items['node/%node/translate']['file'] = 'entity_translation.admin.inc';
++  $items['node/%node/translate']['module'] = 'entity_translation';
+ }
+ 
+ /**
+  * Node specific access callback.
+  */
+-function entity_translation_node_tab_access($node) {
++function entity_translation_node_tab_access() {
++  $args = func_get_args();
++  $node = array_shift($args);
+   if ($node->language != LANGUAGE_NONE) {
+     if (entity_translation_node_supported_type($node->type)) {
+       return entity_translation_tab_access('node');
+     }
+     elseif (entity_translation_node('node', $node)) {
+-      return _translation_tab_access($node);
++      $function = array_shift($args);
++      return call_user_func_array($function, $args);
+     }
+   }
+   return FALSE;

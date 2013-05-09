@@ -1,0 +1,138 @@
+.titol-gran{
+	color:#5F0431;
+	font-size:18px;
+	font-weight:bold;
+}
+
+.tiny-title2{
+	color:#5F0431;
+	font-weight: bold;
+	font-size: 1.1em;
+	margin: 0px;
+	padding: 0px;
+}
+
+
+
+.grana{
+	color:#5F0431;
+}
+
+.peke,.peke-8{
+	font-size:0.8em;
+}
+.peke-9{
+	font-size:0.9em;
+}
+.peke-7{
+	font-size:0.7em;
+}
+
+
+.boto a{
+	color:white;
+	background:#665348;
+	background-image:url(img/menu1_bg_fletxa.png);
+	background-repeat:no-repeat;
+	background-position:right;
+	margin-right:0.2em;
+	padding:0.5em 3em 0.5em 0.5em;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	
+	/*float:right;*/
+
+}
+
+.market-bg-btn-redactar{
+	background-image:url(img/market_bg_btn_redactar.png);
+	background-repeat:no-repeat;
+	padding: 4px 18px 4px 18px;
+}
+.market-bg-btn-quitaanucio{
+	background-image:url(img/market_bg_btn_quitaanuncio.png);
+	background-repeat:no-repeat;
+	padding: 4px 7px 6px 7px;
+}
+
+.corner-all-3{
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+}
+.corner-all-10{
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+}
+
+.sepia{
+    background: #F1EEE8;
+}
+
+.borde-999{
+	border:#999 solid 1px;
+}
+
+.bloque-sepia-borde-padin{
+	background:#F1EEE8;
+	border:#999 solid 1px;
+	min-height:250px;
+
+}
+
+.bloque-sepia-borde, .bloque-padin{padding:6px;}
+.bloque-padin-sepia{padding:6px;    background: #F1EEE8;}
+
+.shadow
+{
+	
+	-webkit-box-shadow: 0 10px 15px -6px #AAA;
+	   -moz-box-shadow: 0 10px 15px -6px #AAA;
+	        box-shadow: 0 10px 15px -6px #AAA;
+}
+
+.alpha-30{
+	zoom: 1;
+	filter: alpha(opacity=30);
+	opacity: 0.3;
+}
+
+.alpha-50{
+	zoom: 1;
+	filter: alpha(opacity=50);
+	opacity: 0.5;
+}
+
+.alpha-80{
+	zoom: 1;
+	filter: alpha(opacity=80);
+	opacity: 0.8;
+}
+
+.taula-contacto{
+	background-image:url(img/taula_contacto.png);
+	color:white;
+	margin-bottom:12px;
+	padding:6px;
+	width:430px;
+}
+
+.foto-inline{float:left;margin-right:6px;min-width:140px;}
+
+.taula-contacto a{	color:white;	}
+
+.separador-h1{
+	padding-left:10px;
+	background-image:url(img/pixCCC.png);
+	background-repeat:repeat-x;
+	background-position:right;
+	height:16px;
+}
+.separador-v1{
+	background-image:url(img/pixCCC.png);
+	background-repeat:repeat-y;
+	background-position:top;
+	width:16px;
+}
+
+.colorbox-node{}
+.colorbox{}

@@ -1,0 +1,40 @@
+<?php
+/*
+ * @file
+ * NIF/CIF/NIE field install file.
+ */
+
+/**
+ * Implements hook_field_schema().
+ */
+function field_nif_field_schema($field) {
+  if ($field['type'] == 'nif') {
+    return array(
+      'columns' => array(
+        'number' => array(
+          'description' => 'Numeric part of the NIF',
+          'type' => 'int',
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'first_letter' => array(
+          'description' => 'First letter of the NIF/CIF/NIE',
+          'type' => 'varchar',
+          'length' => 1,
+        ),
+        'last_letter' => array(
+          'description' => 'Last letter of the NIF/CIF/NIE',
+          'type' => 'varchar',
+          'length' => 1,
+        ),
+        'type' => array(
+          'description' => 'Type of the number, NIF/CIF/NIE',
+          'type' => 'varchar',
+          'length' => 10,
+        ),
+      ),
+      'indexes' => array(
+      ),
+    );
+  }
+}

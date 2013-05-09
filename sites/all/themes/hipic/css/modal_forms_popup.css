@@ -1,0 +1,90 @@
+/* Reset some styles from system.css and modal.css */
+
+.form-item label, label{
+	font-weight:normal;
+}
+
+
+div.modal-forms-modal-content .resizable-textarea {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+div.modal-forms-modal-content .form-item label {
+  float: none;
+  width: auto;
+}
+
+div.modal-forms-modal-content .item-list ul li {
+  margin: 0 0 0.25em 1.5em;
+}
+
+div.modal-forms-modal-content div.messages {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+div.modal-forms-modal-content div.messages > .messages {
+  border: 1px solid;
+  margin: 6px 0;
+  padding: 10px 10px 10px 40px;
+}
+
+/* Styles for modal forms modal */
+
+div.modal-forms-modal-content {
+  background: white;/**/
+  color: #000;
+  font: 12px "Lucida Grande", Verdana, Arial, sans-serif;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+div.modal-forms-modal-content .modal-scroll {
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+div.modal-forms-modal-content .popups-container {
+  overflow: hidden;
+  height: 100%;
+ /* background: #fff;*/
+  background: url(img/login_bg.png) no-repeat;/**/
+  background-size: 100% 100%;/**/
+ 
+  padding: 5px;
+  text-align: left;
+  /*
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  */
+}
+
+div.modal-forms-modal-content .modal-header {
+  background-color: transparent;	
+}
+
+div.modal-forms-modal-content .modal-title {
+  display: inline;
+  color: #000;
+}
+
+div.modal-forms-modal-content .popups-close {
+  float: none;
+  text-align: left;
+  cursor: pointer;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: url(img/close_btnhover.png) 0px 0px no-repeat;
+  width: 20px;
+  height: 20px;
+  text-indent: -9999px;
+  z-index: 1000;    
+}
+
+div.modal-forms-modal-content .popups-close:hover {
+  background-position: 0px -20px;
+}

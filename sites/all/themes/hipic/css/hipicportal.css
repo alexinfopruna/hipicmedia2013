@@ -1,0 +1,393 @@
+#header
+{
+  background:url(img/portal_head_bg.png) 50% 0 no-repeat;
+  min-height:269px;
+}
+
+.block {
+margin-bottom: 4px;
+}
+
+#logo{display:none;}
+
+#navigation{margin-left:50px;}
+#navigation ul.links li.active-trail, #navigation ul.menu li.active-trail  {
+    background-color:#89AB0C;
+}
+
+.language-switcher-locale-session a{color:black;}
+.language-switcher-locale-session a.active{color:#89AB0C;}
+
+
+#site-slogan{display:none;}
+
+#name-and-slogan{
+  margin-top:10px;
+  background-image:none;
+
+}
+
+h1.title {
+  margin-top: -35px;
+  background:white;
+  text-align:center;
+}
+
+
+/*
+DIRECTORIO CENTRAL
+.portal.directorio.empresas{
+  width:710px;
+  float:left;
+}
+
+.section-hipicportal content
+{
+  margin-left: 12px;
+
+}
+
+.portal.directorio.empresas tr{
+  border-bottom:#CCC solid 1px;
+}
+
+.portal.directorio.empresas td{
+  margin-left:10px;
+}
+
+td.directorio.central {
+padding-top: 8px;
+padding-bottom: 5px;
+padding-right: 10px;
+}
+
+*/
+.view-hipicportal-cuadricula-empresas{margin-left:15px;}
+#portal-detalle-empresa-tabs{width:750px;}
+#lista-promos{
+  width:233px;
+  margin-left: 705px;
+}
+
+#lista-promos a{
+  color:white;
+}
+
+
+#lista-empresas{width:705px;float:left;}
+#lista-empresas td{width:235px;}
+
+#lista-promos .views-row-9{
+position:absolute;
+margin-left:-235px;
+margin-top:-131px;
+}
+#lista-promos .views-row-10{
+position:absolute;
+margin-left:-470px;
+margin-top:-131px;
+
+}
+#lista-promos .views-row-11{
+position:absolute;
+margin-left:-705px;
+margin-top:-131px;
+}
+div.promocion {
+  text-align: center;
+
+  width:225px;
+  height:121px;
+  margin-top:10px;
+  padding-left:6px;
+  margin-bottom:0px;
+  color:white;
+  background:url(img/promo_gb_azul.png);
+  background-repeat:no-repeat;
+}
+div.promocion table{width:100%;}
+div.promocion .promo-fila2 .col1{color:white;text-align:left;}
+.lt-ie9 div.promocion .promo-fila2 .fr { line-height: 1 }div.promocion .promo-fila2 .fr{text-transform:uppercase;font-size:7px;font-weight:bold;padding-right:4px;font-family:Arial,sans-serif;line-height:18px}div.promocion strong{color:white;}
+
+div.descuento{font-size:32px;}
+
+div.promocion.promo-Azul{background:url(img/promo_gb_azul.png);background-repeat:no-repeat;}
+div.promocion.promo-Verde{background:url(img/promo_gb_verde.png);background-repeat:no-repeat;}
+div.promocion.promo-Naranja{background:url(img/promo_gb_naranja.png);background-repeat:no-repeat;}
+div.promocion.promo-Rojo{background:url(img/promo_gb_rojo.png);background-repeat:no-repeat;}
+
+div.promocion.promo-Azul .descuento{font-weight:bold;color:#6C90FF;}
+div.promocion.promo-Verde  .descuento{font-weight:bold;color:#99CC33;}
+div.promocion.promo-Naranja .descuento{font-weight:bold;color:#FF9D09;}
+div.promocion.promo-Rojo .descuento{font-weight:bold;color:#CF3637;}
+.descuento{margin-bottom: 3px;}
+
+div.promocion  .label-descuento{
+  font-size:10px;
+  color:#999;
+
+}
+
+div.promocion  img{
+  margin-top:5px;
+  max-height:90px;
+  max-width:90px;
+
+}
+
+.promo-fila1{
+  height:95px;
+}
+
+/*.directorio-empresa-titulo{margin-top:-100px;font-size:1.5em;}*/
+
+
+/*
+  DETALLE EMPRESA
+*/
+
+h4{
+  text-align:center;
+  margin:0;
+color:#990066;
+padding:0;
+}
+
+div.detalle-empresa{
+  width:770px;
+  padding:10px;
+  color:#666;
+  height: 550px;
+
+}
+
+.portal-detalle-empresa, .portal-articulos-descuentos{
+  background:url(img/portal-detalle-tab1.png);
+  background-repeat:no-repeat;
+  padding:15px;
+  width:750px;
+  min-height:489px;
+}
+
+
+
+.portal-detalle-empresa h2{
+  color:black;
+  text-align:right;
+  font-size:30px;
+  font-weight:bold;
+  margin-right: 25px;
+}
+
+.empresa-col1{
+  width:450px;
+}
+.empresa-col2{
+  width:230px;
+    -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border:#AAA solid 1px;
+  padding:6px;
+  margin-left:480px;
+
+
+}
+
+div.empresa-peu a
+{
+  color:#999;
+font-size:18px;
+}
+
+div.empresa-peu
+{
+text-align:right;
+}
+.empresa-direccion
+{
+  float:right;
+  font-size:1.3em;
+font-weight:bold;
+width:200px;
+}
+.empresa-content{
+  border-top:green solid 1px;
+  border-bottom:green solid 1px;
+padding:15px 0 15px 0;
+margin:15px 0 15px 0;
+
+}
+
+.empresa-tel,.empresa-tel2
+{
+  background:url(img/footer_telefono.png);
+  background-repeat:no-repeat;
+  padding-left:25px;
+  padding-top:3px;
+  height:22px;
+  margin-top:5px;
+}
+
+.empresa-sector{
+  border-bottom:#999 solid 1px;
+  padding-bottom: 6px;
+
+}
+
+.empresa-email{
+  background:url(img/footer_mail.png);
+  background-repeat:no-repeat;
+  padding-left:25px;
+  padding-top:3px;
+  height:22px;
+  margin-top:5px;
+  margin-top:5px;
+}
+.empresa-email a{color:#666;}
+
+.empresa-info-peu{
+  border-top: #999 solid 1px;
+  padding-top: 6px;
+  margin-top: 6px;
+}
+.empresa-twit
+{
+  float:right;
+  margin-right: 6px;
+}
+.empresa-fb
+{
+  float:right;
+}
+
+.lineage-item
+{
+  display:block;
+}
+
+
+.detalle-empresa-anuncio .views-view-grid{width:750px;}
+.promocion-hor{margin-right:6px;}
+
+/* articulos */
+#portal-articulos .entity{
+  float:left;
+width:210px;
+margin:5px;
+padding:10px;
+background:#F1EEE8;
+border:#CCC solid 1px;
+border-radius:6px;
+font-size:1.5em;
+min-height:200px;
+}
+#portal-articulos .field-name-field-concepto{
+margin-right:10px;
+color: #555555;
+font-size: 0.75em;
+text-align: center;
+text-transform: uppercase;
+}
+
+#portal-articulos .field-name-field-imagen-portal-anuncio{
+border-top:#880000 solid 1px;
+margin-top:10px;
+padding-top:10px;
+}
+
+#portal-descuentos .entity{
+  float:left;
+width:250px
+
+}
+
+
+/* descuentos */
+#portal-descuentos{clear:both}
+/*******************************************************/
+#block-social-share-social-share h3{display:none;}
+
+.bloque-login-portal{
+  float:right;
+  margin-right: -190px;
+  margin-top: -12px;
+}
+#block-locale-language a{color:#AAA;}
+#block-locale-language a.active{color:#89AB0C}
+#block-locale-language{
+  margin-right:160px;
+}
+
+.block-portal-search{width:960px}
+#block-block-37{width:960px}
+
+#numerets{float:right;margin-top:-80px;margin-right:-15px;}
+.draggable{background:#F1EEE8}
+
+#field-art-culos-values tr {width:900px}
+
+#portal-search form{width:709px;}
+#portal-search form input[type=text]{width:651px}
+
+.bloque-login-portal #login{padding:4px;width:105px;background:url(img/portal_login_bg_btn.png)}
+.bloque-login-portal #portal_publica{padding:4px;width:105px;background:url(img/portal_login_bg_btn.png)}
+.bloque-login-portal #login a{color:#CCC}
+.bloque-login-portal #portal_publica a{color:#CCC}
+
+#profile2-edit-anunciante-form{
+  padding-bottom:40px;
+}
+#profile2_edit_anunciante_articulos_descuentos_form{
+  padding-bottom:40px;
+}
+#profile2_edit_anunciante_facturacion_form{
+  padding-bottom:40px;
+}
+
+#anunciante_contrato_form{
+  padding-bottom:40px;
+}
+
+.container-inline-date .date-padding {
+padding: 0px;
+}
+
+#portal-descuentos .promocion{float:left;margin-left:6px;margin-left:5px;}
+
+.page-profile-anunciante-facturacion .titlex{display:none}
+.page-profile-anunciante .titlex{display:none}
+#lista-promos { margin-left:719px; }
+#lista-empresas { width: 709px; }
+.view-hipicportal-cuadricula-empresas { margin:0;}
+#lista-empresas .views-field-field-tarjeta-present a { display: block; width:231px; height: 108px; }
+#lista-empresas .views-field-field-tarjeta-present img { border:1px solid #adadad; }
+#lista-empresas .field-content { padding: 8px 0; }
+#lista-empresas .row-first .field-content { padding-top: 0; }
+#lista-empresas tr { border-bottom: 1px solid #ccc; padding: 8px 0; }
+#lista-empresas tr.row-first { padding-top: 0; }
+#lista-empresas tr.row-last { border: 0; padding-bottom: 0; }
+#lista-empresas td.fila-empresas { width:239px; }
+#lista-empresas td.col-last { width:231px; }
+
+.field-collection-item-field-art-culos .field-name-field-precio {
+    font-size: .7em;
+    margin-top: .5em;
+}
+
+    .field-collection-item-field-art-culos .field-name-field-precio .field-item {
+        font-weight: bold;
+        color: #FF9D09;
+        text-align: right;
+    }
+    
+/*.page-profile-anunciante-articulos-descuentos div.region-highlighted{*/
+div.region-highlighted{
+  width:100%;
+}
+.page-profile-anunciante-articulos-descuentos th label{
+  color: #5F0431;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin: 0px;
+  padding: 0px;
+}

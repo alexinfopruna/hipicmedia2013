@@ -1,0 +1,469 @@
+<?php
+/**
+ * @file
+ * Provides a payment method for Drupal hipic using Sermepa gateway.
+ */
+
+
+/*
+ * Tarjeta: 4548812049400004 
+Fecha de caducidad: 12/09 
+Código de Seguridad: 285 
+CIP: 123456 
+ * */
+
+DEFINE('HIPIC_PAYMENT_STATUS_SUCCESS', TRUE);
+DEFINE('HIPIC_PAYMENT_STATUS_FAILURE', FALSE);
+//DEFINE('HIPIC_SERMEPA_URL_TEST', 'https://www.google.es');
+DEFINE('HIPIC_SERMEPA_URL_TEST', 'https://sis-t.sermepa.es:25443/sis/realizarPago');
+DEFINE('HIPIC_SERMEPA_URL_LIVE', 'https://sis.sermepa.es/sis/realizarPago');
+
+module_load_include('inc', 'hipic_sermepa', 'Hipicmedia_Order');
+
+/**
+ * Implements hook_menu().
+ */
+function hipic_sermepa_menu() {
+  $items['hipicportal/sermepa/callback'] = array(
+      'page callback' => 'hipic_sermepa_callback',
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+  );
+
+  $items['profile-anunciante_contrato'] = array(
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('hipic_sermepa_prepara_form'),
+      'access callback' => TRUE,
+      //'access callback' => '_hipicmedia_portal_acceso_paso',
+      'access arguments' => array(3),
+      'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+  
+
+
+
+  /**
+   * Get POST response from sermepa.
+   */
+  function hipic_sermepa_callback() {
+    // Load order and payment_method objects
+    
+    if ($feedback = hipic_sermepa_get_feedback()) {
+      $order_id = explode("_", $feedback['Ds_Order']);
+        print(" ORDER ".$order_id[1]." OK  /");
+      $order = hipic_order_load($order_id[1]);
+            
+      if ($order) {
+        // Load the payment method, since it won't be available if no $order object was passed in as argument
+        $payment_method = hipic_payment_method_instance_load($order->data['payment_method']);
+        
+        
+        if (!$payment_method || $payment_method['method_id'] != 'hipic_sermepa') {
+          print(" ERROR: method ko /");
+          return FALSE;
+        }
+        if (hipic_sermepa_valid_sha1($order, $payment_method, $feedback)) {
+        print (" SHA1 OK...");
+          hipic_sermepa_process_transaction($order, $payment_method, $feedback);
+        print (" TRANSACTION PROCESSED /");
+        }
+        else{
+          print "ERROR: SHA1 /";
+        }
+      }
+    }  
+    return FALSE;
+  }
+  
+
+  /**
+   * Prepara order 
+   * Prepara payment_method
+   * Carga el formulario.
+   */
+  function hipic_sermepa_prepara_form($form, &$form_state){
+    if ($order=Hipicmedia_Order::orden_pagada_by_uid()){
+      $data=$order->field_fecha_caducidad['und'][0]['value'];
+      drupal_set_message(t('Already have a valid order until @date. This payment will mean a one-year renewal',array('@date' => $data)),'hipic');   
+    }
+    
+    global $user;
+    $uid=$user->uid;
+    $importe=variable_get('Ds_Merchant_Amount');
+    $modo_pago=146; // TID TPV taxonomy modos de pago
+    
+    $order = new Hipicmedia_Order();   
+    $order->crea_orden($uid, $importe, $modo_pago);
+   
+    $payment_method = hipic_payment_method_instance_load($order->data['payment_method']);
+    //AÑADO NOMBRE USUARIO
+    $profile=user_load($order->node->uid);
+    $l=user_preferred_language($profile);
+    if (!isset($profile->name_field[$l->language])) $l->language='und';
+    //print_r($payment_method);
+    $nombre=$profile->name_field[$l->language]['0']['value'];
+    //$nombre=$profile->name;
+    $apellidos=$profile->field_apellidos['es']['0']['value'];
+    $payment_method['settings']['Ds_Merchant_Titular'] = $nombre." ".$apellidos;
+    
+    return hipic_sermepa_redirect_form($form, $form_state, $order, $payment_method);
+  }
+  
+ /**
+   * Payment method callback: redirect form to sermepa gateway.
+   */
+  function hipic_sermepa_redirect_form($form, &$form_state, $order, $payment_method) {
+    // Return an error if the enabling action's settings haven't been configured.
+    if (empty($payment_method['settings']['Ds_MerchantCode'])) {
+      drupal_set_message(t('Sermepa is not configured for use. Merchant code has not been specified.'), 'error');
+      return array();
+    }
+  
+    if (empty($payment_method['settings']['Ds_MerchantSignature'])) {
+      drupal_set_message(t('Sermepa signature is not set for use. Merchant signature has not been specified.'), 'error');
+      return array();
+    }
+  
+  
+    return hipic_sermepa_order_form($form, $form_state, $order, $payment_method['settings']);
+  }
+  
+  /**
+   * Build the order form for the sermepa.
+   *
+   * @param $order
+   *   The fully loaded order being paid for.
+   */
+  function hipic_sermepa_order_form($form, &$form_state, $order, $settings) {
+    $merchant_order = substr(date('ymdHis') . '_' . $order->order_id, -12, 12);
+    $transactiontype = '0';
+    
+   // dsm($order);
+    $import=$order->hipic_order_total[LANGUAGE_NONE][0]['amount']*100;
+    if ($settings['advanced']['encryption'] == 'sha1-enhanced') {
+      $message = $import . $merchant_order . $settings['Ds_MerchantCode'] . $settings['currency'] . $transactiontype . $settings['merchant_url'] . $settings['Ds_MerchantSignature'];
+      $signature = strtoupper(sha1($message));
+    }
+    elseif ($settings['advanced']['encryption'] == 'sha1') {
+      module_load_include('inc', 'hipic_sermepa', 'sha1');
+      $sha = new SHA1;
+      $message = $import . $merchant_order . $settings['Ds_MerchantCode'] . $settings['currency'] . $settings['Ds_MerchantSignature'];
+      $digest1 = $sha->hash_string($message);
+      $signature = strtoupper($sha->hash_to_string($digest1));
+    }
+  
+    // Get the url to connect to.
+    if (!empty($settings['advanced']['override_url'])) {
+      $url = $settings['override_url'];
+    }
+    elseif ($settings['mode'] == 'live') {
+      $url = HIPIC_SERMEPA_URL_LIVE;
+    }
+    else {
+      $url = HIPIC_SERMEPA_URL_TEST;
+    }
+  
+    $hidden_fields = array(
+        'Ds_Merchant_Amount' => $import,
+        'Ds_Merchant_Currency' => $settings['currency'],
+        'Ds_Merchant_Order' => $merchant_order,
+        'Ds_Merchant_Titular' => $settings['Ds_Merchant_Titular'],
+        'Ds_Merchant_MerchantName' => $settings['Ds_Merchant_Name'],
+        'Ds_Merchant_MerchantCode' => $settings['Ds_MerchantCode'],
+        'Ds_Merchant_MerchantURL' => $settings['merchant_url'],
+        'Ds_Merchant_UrlOK' => $settings['return'],
+        'Ds_Merchant_UrlKO' => $settings['cancel_return'],
+        'Ds_Merchant_ConsumerLanguage' => 1,
+        'Ds_Merchant_TransactionType' => $transactiontype,
+        'Ds_Merchant_MerchantSignature' => $signature,
+        'Ds_Merchant_Terminal' => $settings['Ds_Merchant_Terminal'],
+    );
+  
+    $form['#action'] = $url;
+    $form['#attributes']['target'] = 'tpv';
+    
+    // Create hidden fields.
+    foreach ($hidden_fields as $name => $value) {
+      $form[$name] = array(
+          '#title' => $name,
+          '#type' => 'hidden',
+//          '#type' => 'textfield',
+          '#value' => $value,
+      );
+    }
+  
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Redirect to Sermepa platform'),
+    );
+    $form['submit']['#attributes']['onclick'] = 'javascript:calc()';
+    
+    $form['back'] = array(
+        '#type' => 'markup',
+        '#markup' => '<a href="javascript:history.go(-1)" class="boto-blau">'.t('Back').'</a>',
+    );
+    
+    return $form;
+  }
+  
+  /**
+   * Implements hook_redirect_form_validate.
+   */
+  function hipic_sermepa_redirect_form_validate($order, $payment_method) {
+    print "POR AKIIII111????????";
+    
+    hipic_sermepa_process_callback($order, $payment_method);
+  }
+  
+  /**
+   * Gets the Sermepa feedback from GET / POST parameters.
+   *
+   * @return
+   *   An associative array containing the Sermepa feedback taken from the $_GET and
+   *   $_POST superglobals, excluding 'q'.
+   *   Returns FALSE if the Ds_Order parameter is missing (indicating missing or
+   *   invalid Ogone feedback).
+   */
+  function hipic_sermepa_get_feedback() {
+    $feedback = FALSE;
+    if (isset($_REQUEST['Ds_Order'])) {
+      // Prepare the feedback values sent by Sermepa for processing. We don't use
+      // $_REQUEST since this includes the $_SESSION variables.
+      $feedback = $_GET + $_POST;
+      unset($feedback['q']);
+    }
+    return $feedback;
+  }
+  
+  /**
+   * Check if SHA1 in callback feedback is valid
+   */
+  function hipic_sermepa_valid_sha1($order, $payment_method, $feedback) {
+    $order_id = explode("_", $feedback['Ds_Order']);
+    $order = hipic_order_load($order_id[1]);
+    $import=$order->hipic_order_total[LANGUAGE_NONE][0]['amount']*100;
+    
+    $message = $import . $feedback['Ds_Order'] . $feedback['Ds_MerchantCode'] . $feedback['Ds_Currency'] . $feedback['Ds_Response'] . $payment_method['settings']['Ds_MerchantSignature'];
+    $debug = $import .' / '. $feedback['Ds_Order'] .' / ' . $feedback['Ds_MerchantCode']  .' / '. $feedback['Ds_Currency']  .' / '. $feedback['Ds_Response']  .' / '. $payment_method['settings']['Ds_MerchantSignature'];
+/*    
+  print $debug;
+print ' >>>> '.strtoupper(sha1($message))." --- ";
+    print "<pre>";
+    print_r($feedback);
+    print "</pre>";
+*/
+    if ($feedback['Ds_Signature'] != strtoupper(sha1($message))) {
+      watchdog('hipic_sermepa', t('Signature for the payment doesn\'t match'), array(), WATCHDOG_ERROR);
+      watchdog('hipic_sermepa', $debug, array(), WATCHDOG_ERROR);
+      watchdog('hipic_sermepa', $feedback, array(), WATCHDOG_ERROR);
+      watchdog('hipic_sermepa', $order, array(), WATCHDOG_ERROR);
+      return FALSE;
+    }
+  
+    if (empty($feedback['Ds_AuthorisationCode'])) {
+      watchdog('hipic_sermepa', t('No authorisation code for the transaction'), array(), WATCHDOG_ERROR);
+      return FALSE;
+    }
+  
+    return TRUE;
+  }
+  
+  /**
+   * Process callback information from Sermepa
+   * This can either be through a redirect after payment, or a Direct HTTP server-to-server request
+   */
+  function hipic_sermepa_process_callback($order, $payment_method) {
+    if ($feedback = hipic_sermepa_get_feedback()) {
+      if (hipic_sermepa_valid_sha1($order, $payment_method, $feedback)) {
+        print "POR AKIIII22222????????";
+        // Process the transaction based on the Sermepa parameters received
+        hipic_sermepa_process_transaction($order, $payment_method, $feedback);
+        return TRUE;
+      }
+    }
+  }
+  
+  /**
+   * Handle the response of the payment transaction.
+   */
+  function _hipic_sermepa_response($response = NULL) {
+    if ((int) $response <= 99) {
+      $st = HIPIC_PAYMENT_STATUS_SUCCESS;
+      $msg = t('Authorized');
+    }
+    else {
+      $st = HIPIC_PAYMENT_STATUS_FAILURE;
+        switch ((int) $response) {
+          case 900:
+            $msg = t('Authorized for returns and transaction confirmations');
+          case 101:
+            $msg = t('Expired card');
+          case 102:
+            $msg = t('Transitional derogation card fraud or suspected');
+          case 104:
+          case 9104:
+            $msg = t('Operation not allowed for this card or terminal');
+          case 116:
+            $msg = t('Insufficient available');
+          case 118:
+            $msg = t('Card not registered');
+          case 129:
+            $msg = t('Security code (CVV2/CVC2) incorrectly');
+          case 180:
+            $msg = t('Outside the service card');
+          case 184:
+            $msg = t('Authentication failed holder');
+          case 190:
+            $msg = t('Reason Unspecified Denial');
+          case 191:
+            $msg = t('Expiration date wrong');
+          case 202:
+            $msg = t('Temporary or emergency card on suspicion of withdrawal card fraud');
+          case 912:
+          case 9912:
+            $msg = t('Issuer not available');
+          default:
+            $msg = t('Transaction refused!');
+          }
+    }
+    return array(
+        'code' => $st,
+        'message' => $msg,
+    );
+  }
+  
+  /**
+   * Save the payment transaction for the order.
+   */
+  function hipic_sermepa_process_transaction($order, $payment_method, $feedback, $redirect = TRUE) {
+    // Handle the response of the bank.
+    $transaction_status = _hipic_sermepa_response($feedback['Ds_Response']); 
+    $transaction_amount = $order->hipic_order_total[LANGUAGE_NONE][0]['amount'];
+    //$transaction_currency_code = $order->hipic_order_total[LANGUAGE_NONE][0]['currency_code'];
+    //$transaction_remote_id = $feedback['Ds_AuthorisationCode'];
+ 
+    //$transaction_status = $transaction_status['code'];
+    if ($transaction_status['code'] == HIPIC_PAYMENT_STATUS_SUCCESS) {
+      $transaction_message = 'Transaction accepted with id '.$order->order_id;  
+
+      $order->orden_pagada($transaction_message);
+      _hipic_sermepa_enviamail($order->node->uid);
+      
+    }
+    elseif ($transaction_status['code'] == HIPIC_PAYMENT_STATUS_FAILURE) {
+      $transaction_message = 'Error for the transaction with id @transaction_id: ' . $payment_status['message'];
+    }
+    
+    
+    $transaction_message_variables = array(
+        '@transaction_id' => $feedback['Ds_AuthorisationCode'],
+    );
+  }
+  
+  /**
+   * Payment method callback: checkout form.
+   */
+  function hipic_sermepa_submit_form($payment_method, $pane_values, $checkout_pane, $order) {
+    if (!empty($payment_method['settings']['description'])) {
+      $form = array();
+      $form['sermepa_description'] = array(
+          '#type' => 'item',
+          '#title' => t('Payment instructions'),
+          '#markup' => '<p class="sermepa-description">' . $payment_method['settings']['description'] . '</p>'
+      );
+      return $form;
+    }
+  }
+  
+  
+  function hipic_order_load($nid){
+    return $o=new Hipicmedia_Order($nid);
+  }
+  
+  function hipic_payment_method_instance_load($tid){
+    $payment_method = array();
+    
+    
+    // SI ES TPV SERMEPA
+    if ($tid==146){
+      $payment_method['instance_id'] = drupal_get_token(rand(1000,9999));
+      $payment_method['method_id'] = 'hipic_sermepa';
+      $payment_method['settings'] = array(
+          'description' =>  variable_get('name'),
+          'name' => variable_get('name'),
+          'mode' => variable_get('mode'),
+          'Ds_Merchant_Amount' => variable_get('Ds_Merchant_Amount'),
+          'Ds_Merchant_Currency' => variable_get('currency'),
+          'currency' => variable_get('currency'),
+          //'Ds_Merchant_Titular' => variable_get('Ds_Merchant_Titular'),
+          'Ds_Merchant_MerchantName' => variable_get('Ds_Merchant_Name'),
+          'Ds_Merchant_Name' => variable_get('Ds_Merchant_Name'),
+      
+          'Ds_Merchant_MerchantCode' => variable_get('Ds_MerchantCode'),
+          'Ds_MerchantCode' => variable_get('Ds_MerchantCode'),
+          'Ds_Merchant_MerchanSignature' => variable_get('Ds_MerchantSignature'),
+          'Ds_MerchantSignature' => variable_get('Ds_MerchantSignature'),
+      
+      
+          'Ds_Merchant_MerchantURL' => variable_get('merchant_url'),
+          'Ds_Merchant_UrlOK' => variable_get('return'),
+          'Ds_Merchant_UrlKO' => variable_get('cancel_return'),
+          'Ds_Merchant_Terminal' => variable_get('Ds_Merchant_Terminal'),
+      
+          // Return to the previous page when payment is canceled
+          //'cancel_return' => url('checkout/' . $order->order_id . '/payment/back/' . $order->data['payment_redirect_key'], array('absolute' => TRUE)),
+          'cancel_return' => url('hipicportal/pago_error', array('absolute' => TRUE)),
+          // Return to the payment redirect page for processing successful payments
+          'return' => url('hipicportal/pago_finalizado', array('absolute' => TRUE)),
+          // Url to get POST result of payment.
+          'merchant_url' => url('hipicportal/sermepa/callback', array('absolute' => TRUE)),
+          // Specify the current payment method instance ID in the notify_url
+          'payment_method' => $payment_method['instance_id'],
+      
+      
+      
+      
+          'advanced' => array(
+              'override_url' => variable_get('override_url', ''),
+              'encryption' => variable_get('encryption', 'sha1-enhanced'),
+          ),
+      );
+    }
+    
+        
+    return $payment_method;
+  }
+  
+  /*
+   *
+  *
+  * Sends an email when a node is added
+  */
+  function _hipic_sermepa_enviamail($uid) {
+    $user=user_load($uid);
+    $email=$user->mail;
+    drupal_mail('hipic_sermepa', 'hipic_sermepa', $email , user_preferred_language($user));    
+  }
+  
+  /*
+   * Implements hook_mail()
+  *
+  * Sends an email when a node is added
+  */
+  
+ 
+  function hipic_sermepa_mail($key, &$message, $params){
+    $message['from']='hipicportal@hipicmedia.com';
+    $message['subject']=t('HipicPortal: confirmación de pago con tarjeta');
+    $message['body'][]=t('Hemos recibido confirmación del pago de anuncios en Hipic Portal.
+En las próximas horas nuestro equipo revisará tus datos y los publicará.');
+    $message['body'][]=t('Muchas gracias!');
+    
+    watchdog('hipic_sermepa', '(mail tpv_ok)<pre>'.print_r($message,true).'</pre>');
+    
+  }
+ 
+  

@@ -1,0 +1,218 @@
+  <?php 
+
+/**
+ * Implements hook_theme().
+ */
+function hipicmarket_theme($existing, $type, $theme, $path) {
+  return array(
+      'item_hipicmarket_node_form' => array(
+          'render element' => 'form',
+          'template' => 'item-hipicmarket-node-form',
+          'path' => drupal_get_path('theme', 'hipic').'/templates/forms',
+      ),
+  );
+}
+
+/**
+ * Implements hook_form_alter
+ * 
+ * formulario add item_hipicmarket
+ * formulario add item_hipicmarket
+ * formulario add item_hipicmarket
+ * formulario add item_hipicmarket
+ */
+function hipicmarket_form_alter(&$form, &$form_state, $form_id) {
+  //drupal_set_message(date("H:i:s")."**FORM_ID: ".$form_id);
+  if ($form_id == 'item_hipicmarket_node_form') {
+    //module_load_include('inc', 'hipicmarket', 'visibilidad');
+    
+    // Get the path to the module
+    $path = drupal_get_path('theme', 'hipic');
+    // Attach the CSS and JS to the form
+    $form['#attached'] = array
+    (
+        'css' => array
+        (
+            'type' => 'file',
+            'data' => $path . 'css/forms/form_market.css',
+        ),
+        /*
+        'js' => array
+        (
+            'type' => 'file',
+            'data' => $path . 'css/forms//form_theme.js',
+        ),
+        */
+    );    
+  
+
+    $form['#after_build'][] = 'hipicmarket_item_hipicmarket_node_form_after_build';
+    //$form['title_field']['#access'] = FALSE;
+    $form['field_autor_respuesta']['#access'] = FALSE;
+    $form['flag']['#access'] = FALSE;
+
+    
+    /*
+     * DATOS PROFILE USUARIO
+     */
+    global $user;
+    $user_fields = user_load($user->uid);
+   // dsm( $user_fields);
+    
+    /*
+     * DEFAULTS
+     */
+    if(!isset($form['nid']['#value']))
+    {
+      $lang='es';
+    //$lang=$form['profile_anunciante_facturacion']['field_sector']['#language'];
+      //$form['name_field']["und"][0]['value']['#default_value'] = $user_fields->name;
+      if (isset($user_fields->field_apellidos[$lang][0]['value'])) $form['field_apellidos'][$lang][0]['value']['#default_value'] = $user_fields->field_apellidos[$lang]['0']['value'];
+      if (isset($user->mail)) $form['field_email'][$lang][0]['email']['#default_value'] = $user->mail;
+      if (isset($user_fields->field_direccion[$lang][0]['value'])) $form['field_direccion'][$lang][0]['value']['#default_value'] = $user_fields->field_direccion[$lang]['0']['value'];
+      if (isset($user_fields->field_ciudad[$lang][0]['value'])) $form['field_ciudad'][$lang][0]['value']['#default_value'] = $user_fields->field_ciudad[$lang]['0']['value'];
+      if (isset($user_fields->field_provincia[$lang][0]['value'])) $form['field_provincia'][$lang][0]['value']['#default_value'] = $user_fields->field_provincia[$lang]['0']['value'];
+      if (isset($user_fields->field_c_postal[$lang][0]['value'])) $form['field_c_postal'][$lang][0]['value']['#default_value'] = $user_fields->field_c_postal[$lang]['0']['value'];
+
+$form['field_categor_as'][$lang][0]['value']['#default_value'] = '32';
+$form['field_antig_edad']['und']['#default_value'] = '_none';
+$form['field_disciplina'][LANGUAGE_NONE]['#default_value'] = '_none';
+$form['field_capa'][LANGUAGE_NONE]['#default_value'] = '_none';
+    }
+    
+    
+    
+    
+    
+    $lang = $form['field_categor_as']['#language'];
+    $fhsname='field_categor_as['. $lang .']';
+    
+    //VISIBILIDAD DEPENDIENDO DE ACCESORIO / ANIMAL
+    /*
+    
+    $es_animal=array(
+        'visible' => array(
+            ':input[name="'.$fhsname.'"]' => array('value' => (string) '34'),
+        ),
+    );
+    */
+    $es_animal=array(
+        'visible' => array(
+            ':input[name="'.$fhsname.'"]' => array(array('value' => (string) '32'),array('value' => (string) '33'),array('value' => (string) '34')), 
+        ),
+        //'required' => array(
+        //    ':input[name="'.$fhsname.'"]' => array(array('value' => (string) '32'),array('value' => (string) '33'),array('value' => (string) '34')), 
+        //),
+    );
+    
+    
+    
+    $es_accesorio=array(
+        'visible' => array(
+            ':input[name="'.$fhsname.'"]' => array('value' => (string) '35'),
+        ),
+        //'required' => array(
+        //    ':input[name="'.$fhsname.'"]' => array('value' => (string) '35'),
+        //),
+    );
+    
+    
+    //STATES VISIBILIDAD ANIMAL
+//     $form['body']['#states'] = $es_animal;  
+     $form['field_nombre_del_animal']['#states'] = $es_animal;  
+     $form['field_edad_del_animal']['#states'] = $es_animal;  
+     $form['field_talla_animal']['#states'] = $es_animal;  
+     $form['field_raza_del_animal']['#states'] = $es_animal;  
+     $form['field_sexo_del_animal']['#states'] = $es_animal;  
+     $form['field_capa']['#states'] = $es_animal;  
+
+     //STATES VISIBILIDAD ACCESORIO
+     $form['field_art_culo']['#states'] = $es_accesorio;  
+     $form['field_marca']['#states'] = $es_accesorio;  
+     $form['field_modelo']['#states'] = $es_accesorio;  
+     $form['field_antig_edad']['#states'] = $es_accesorio;  
+   
+     //STATES VISIBILIDAD DISCIPLINA OTROS
+    $lang = $form['field_disciplina']['#language'];
+    $fhsname='field_disciplina['. $lang .']';
+     $form['field_categoria_otros']['#states'] = array(
+        'visible' => array(
+            ':input[name="'.$fhsname.'"]' => array('value' => (string) '151'),
+        ),
+    );
+     
+  }  
+  
+}
+
+// ESCONDO SELECTOR WYSYWYG
+function hipicmarket_item_hipicmarket_node_form_after_build($form) {
+  // We want this on a specific field
+  $form['description_field']['und']['0']['format']['#access'] = FALSE;
+  $form['description_field']['es']['0']['format']['#access'] = FALSE;
+  $form['body']['und']['0']['format']['#access'] = FALSE;
+  $form['body']['es']['0']['format']['#access'] = FALSE;
+  return $form;
+}
+
+/*******************************************************/
+/*******************************************************/
+/************* EMAILS ************************/
+/*******************************************************/
+/*******************************************************/
+
+/*
+ * Implements hook_node_insert()
+*
+* Sends an email when a node is added
+*/
+function hipicmarket_node_insert($node) {
+  global $user;
+  $email=variable_get('hipicmedia_mail_market', 'hipicmarket@hipicmedia.com');
+  
+  $params=array('nid'=>$node->nid);
+  if ($node->type == "item_hipicmarket") {
+    drupal_mail('hipicmarket', 'nuevo articulo market', $email , user_preferred_language($user), $params);
+  }
+}
+/*
+ * Implements hook_node_update()
+*
+* Sends an email when a node is added
+*/
+function hipicmarket_node_update($node) {
+  global $user;
+  $email=variable_get('hipicmedia_mail_market', 'hipicmarket@hipicmedia.com');
+  
+  $params=array('nid'=>$node->nid);
+   if ($node->type == "item_hipicmarket") {
+    drupal_mail('hipicmarket', 'editado articulo market', $email , user_preferred_language($user), $params);
+  }
+}
+/*
+ * Implements hook_mail()
+*
+* Sends an email when a node is added
+*/
+function hipicmarket_mail($key, &$message, $params)
+{
+  $email=variable_get('hipicmedia_mail_market', 'hipicmarket@hipicmedia.com');
+  
+  switch($key){
+    case 'nuevo articulo market':
+      $message['to']=$email;
+      $message['subject']='Nuevo articulo en hipicmarket';
+      $message['body'][]='Se ha creado un artículo en hipicmarket. Es necesario revisarlo y publicarlo';
+      $message['body'][]='Link: http://dev.hipicmedia.com/node/' . $params['nid'];
+
+      break;
+      
+    case 'editado articulo market':
+      $message['to']=$email;
+      $message['subject']='Editado articulo en hipicmarket';
+      $message['body'][]='Se ha editado un artículo en hipicmarket. Es necesario revisarlo';
+      $message['body'][]='Link: http://dev.hipicmedia.com/node/' . $params['nid'];
+
+      break;
+  }
+}

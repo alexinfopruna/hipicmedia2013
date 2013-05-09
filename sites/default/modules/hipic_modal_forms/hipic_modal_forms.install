@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Contains install and update functions for hipic_modal_forms.
+ */
+
+
+/**
+ * Implements hook_install().
+ */
+function hipic_modal_forms_install() {
+
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function hipic_modal_forms_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE 'hipic_modal_forms_%'");
+}

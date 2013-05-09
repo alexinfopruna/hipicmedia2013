@@ -1,0 +1,64 @@
+http://example.com/drupal/documentation?page=1
+
+$GLOBALS['base_url'] => http://example.com/drupal
+base_path() => /drupal/
+request_uri() =>  /drupal/documentation?page=1
+request_path() => documentation
+current_path() => node/26419
+$_SERVER['REQUEST_URI']=>
+$_GET['q']=> http://example.com/drupal/documentation?page=1
+
+drupal_get_path_alias()
+
+
+window.location.host     // www.somedomain.com (includes port if there is one)
+window.location.hostname // www.somedomain.com
+window.location.hash     // #top
+window.location.href     // http://www.somedomain.com/account/search?filter=a#top
+window.location.port     // (empty string)
+window.location.protocol // http:
+window.location.search   // ?filter=a
+
+
+**field_view_field
+print drupal_render(field_view_field('node', $node, 'field_zipcode'));
+
+$profile = profile2_load_by_user($account);
+print drupal_render(field_view_field('profile2', $profile['main'], 'field_zipcode'));
+
+
+///////////////////////////////////////////////////
+http://dev.hipicmedia.com/ordenar/noticias
+http://dev.hipicmedia.com/ordenar/videos
+
+LOGS
+http://dev.hipicmedia.com/admin/reports/dblog
+
+<front>
+videos
+videos/*
+videos/*/*
+noticias
+noticias/*
+noticias/*/*
+usuarios
+usuarios/*
+usuarios/*/*
+hipicmarket
+hipicmarket/*/*
+calendario
+calendario/*/* 
+             
+             
+s_twitter-profile-widget CAIXA TWITTER
+s_facebook_like_box
+
+[socialmedia:sm-twitter_username]
+[socialmedia:sm-default_link_target_profile]
+[socialmedia:sm-default_link_rel_profile]
+[socialmedia:sm-twitter_icon-path]
+[socialmedia:sm-facebook_url]
+[socialmedia:sm-facebook_username]
+[socialmedia:sm-facebook_icon-path]
+
+             

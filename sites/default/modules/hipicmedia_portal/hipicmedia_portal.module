@@ -1,0 +1,634 @@
+<?php
+
+/**
+ * Implements hook_permissions().
+ */
+function hipicmedia_portal_permission() {
+  return array(
+    'administer hipicportal settings' => array(
+      'title' => t('Administer HipicPortal Settings'),
+      'description' => t('Perform administration tasks for HipicPortal.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function hipicmedia_portal_menu() {
+  $items = array();
+
+  $items['admin/config/hipicportal/settings'] = array(
+    'title' => 'Hipicportal Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('hipicmedia_portal_settings_form'),
+    'access arguments' => array('administer hipicportal settings'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+function hipicmedia_portal_settings_form() {
+  $form = array();
+
+  $form['hp_annual_fee_amount'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Annual fee amount'),
+    '#description' => t('Enter annual fee amount. Use the token "[hp_annual_fee]" to show this value in the "Fee and discounts information" field'),
+    '#default_value' => variable_get('hp_annual_fee_amount', 280),
+  );
+
+  $form['hp_discounts'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Discount to apply'),
+    '#description' => t('Enter the amount of the discount to apply. Use the token "[hp_discounts]" to show this value in the "Fee and discounts information" field'),
+    '#default_value' => variable_get('hp_discounts', 100),
+  );
+
+  $form['hp_advertiser_fee_text'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Fee and discounts information'),
+    '#description' => t('This text will be showed at the end of the new hipicportal process. Use the token "[payment-total]" to show the calculated value of the payment'),
+    '#default_value' => t(variable_get('hp_advertiser_fee_text', '')),
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * MULTI-STEP CADA PASO
+ */
+
+function _hipicmedia_portal_forms() {
+
+  $steps['path']=array(
+      'profile-anunciante',
+      'profile-anunciante_articulos_descuentos',
+      'profile-anunciante_facturacion',
+      'profile-anunciante_contrato',
+  );
+
+  $steps['fid']=array(
+      'profile2_edit_anunciante_form',
+      'profile2_edit_anunciante_articulos_descuentos_form',
+      'profile2_edit_anunciante_facturacion_form',
+      'hipic_sermepa_prepara_form',
+  );
+
+  $steps['title']=array(
+      t('Edit Advertiser: Public information'),
+      t('Edit Advertiser: Articles and discounts'),
+      t('Edit Advertiser: Billing information'),
+      t('Edit Advertiser: Payment'),
+  );
+
+  return $steps;
+}
+
+/**
+ * MULTI-STEP
+ *
+ */
+
+function hipicmedia_portal_form_alter(&$form, &$form_state, $form_id){
+
+  module_load_include('inc', 'node', 'node.pages');
+
+  $steps = _hipicmedia_portal_forms();
+
+  //SI NO ES PORTAL, FORA
+  if (!in_array($form_id, $steps['fid'])) {
+    return;
+  }
+
+  //$lang = $form['fields']['field_documento_main']['#language'];
+
+  $step = _step_actual($steps['path']);
+
+  //$form['#prefix']='<h2>'.t($steps['title'][$step]).'</h2>';
+
+  $paso = $step + 1;
+  $form['#prefix']='<h2>'.($steps['title'][$step]).'</h2><span class="step-img-' . $paso . '">' . t("Step @step", array("@step" => $paso)) . '</span>';
+  $form['#submit'][] = '_hipicmedia_portal_submit';
+  $form['#validate'][] = '_validation_function';
+
+  //ACCESS  
+
+  $uid = $form_state['build_info']['args'][0]->uid;
+  $access = _hipicmedia_portal_acceso_paso(_step_actual($steps['path']), $uid);
+  if (!$access) {
+    drupal_access_denied();
+    exit;
+  }
+
+  $form["#access"] = _hipicmedia_portal_acceso_paso(_step_actual($steps['path']), $uid);
+
+  // CONDITIONA CIF/NIF FACTURACION
+
+  if ($form_id == 'profile2_edit_anunciante_facturacion_form') {
+
+    //$lang='und';
+    $lang = $form['profile_anunciante_facturacion']['field_documento_main']['#language'];
+    $lang = "es";
+    $fhsname = 'profile_anunciante_facturacion[field_documento_main]['.$lang.']';
+    $fhsname = 'profile_anunciante_facturacion[field_documento_main][es]';
+
+    $es_cif = array(
+      'visible' => array(
+        '[name="'.$fhsname.'"]' => array('value' => (string) '143'),
+      ),
+      'required' => array(
+        '[name="'.$fhsname.'"]' => array('value' => (string) '143'),
+      ),
+    );
+
+    $es_nif = array(
+      'required' => array(
+        '[name="'.$fhsname.'"]' => array(
+          array('value' => (string) '142'),
+          array('value' => (string) '144'),
+        ),
+      ),
+    );
+
+
+    $lang = $form['profile_anunciante_facturacion']['field_formas_de_pago']['#language'];
+    $fhsname = 'profile_anunciante_facturacion[field_formas_de_pago]['.$lang.']';
+    $es_domiciliacion = array(
+      'visible' => array(
+        ':input[name="'.$fhsname.'"]' => array('value' => (string) '147'),
+      ),
+      'required' => array(
+        ':input[name="'.$fhsname.'"]' => array('value' => (string) '147'),
+      ),
+    );
+
+    unset($form['profile_anunciante_facturacion']['field_tipo_de_documento'][$lang]['#options'][143]);
+    unset($form['profile_anunciante_facturacion']['field_formas_de_pago']['es']['#options'][147]);
+    $form['profile_anunciante_facturacion']['field_nif']['#states'] = $es_cif;
+    $form['profile_anunciante_facturacion']['field_nombre_de_la_empresa']['#states'] = $es_cif;
+    $form['profile_anunciante_facturacion']['field_segundo_apellido']['#states'] = $es_nif;
+    //$form['profile_anunciante_facturacion']['field_raz_n_social']['#states'] = $es_cif;
+    $form['profile_anunciante_facturacion']['field_raz_n_social']['#access'] = FALSE;
+    $form['profile_anunciante_facturacion']['field_tipo_de_documento']['#states'] = $es_cif;
+    $form['profile_anunciante_facturacion']['field_titular_de_la_cuenta']['#states'] = $es_domiciliacion;
+    $form['profile_anunciante_facturacion']['field_n_mero_de_cuenta']['#states'] = $es_domiciliacion;
+    $form['profile_anunciante_facturacion']['field_fecha_de_nacimiento']['#element_validate'] = array('valida_18');
+
+
+    //FIELD VALIDATES
+    $form['profile_anunciante_facturacion']['field_nif']['#element_validate'] = array('valida_cif');
+    $form['profile_anunciante_facturacion']['field_titular_de_la_cuenta']['#element_validate'] = array('valida_cuenta');
+    $form['profile_anunciante_facturacion']['field_n_mero_de_cuenta']['#element_validate'] = array('valida_cuenta');
+    $form['profile_anunciante_facturacion']['field_nombre_de_la_empresa']['#element_validate'] = array('valida_cif_company');
+    //$form['profile_anunciante_facturacion']['field_raz_n_social']['#element_validate'] = array('valida_cif_company');
+
+    $amount = variable_get('hp_annual_fee_amount', 280);
+    $discounts = variable_get('hp_discounts', 100);
+    $total = $amount - $discounts;
+    $txt = t(variable_get('hp_advertiser_fee_text', ''));
+    $txt = str_replace(array('[hp_annual_fee]', '[hp_discounts]', '[payment-total]'), array($amount, $discounts, $total), $txt);
+    //$txt=t(variable_get('hipicmedia_transfer_texta'));
+
+    $form['message'] = array(
+      '#type' => 'container',
+      '#children' => $txt,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="'.$fhsname.'"]' => array('value' => (string) '145'),
+        ),
+      ),
+    );
+
+    //$txt=t(variable_get('hipicmedia_card_texta'));
+
+    $form['message2'] = array(
+      '#type' => 'container',
+      '#children' => $txt,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="'.$fhsname.'"]' => array('value' => (string) '146'),
+        ),
+      ),
+    );
+
+   // $txt=t(variable_get('hipicmedia_debit_texta'));
+
+    $form['message3'] = array(
+      '#type' => 'container',
+      '#children' => $txt,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="'.$fhsname.'"]' => array('value' => (string) '147'),
+        ),
+      ),
+    );
+  }
+
+  /*  */
+
+  //CONDICIONA OTROS
+
+  if ($form_id == 'profile2_edit_anunciante_form') {
+    //$lang=$form['profile_anunciante_facturacion']['field_sector']['#language'];
+
+    $lang = $form['profile_anunciante']['field_sector']['#language'];
+    $fhsname = 'profile_anunciante[field_sector][' . $lang . '][136]';
+    $form['profile_anunciante']['field_sector_otro']['#states'] = array(
+      'visible' => array(
+        ':input[name="' . $fhsname . '"]' => array('checked' => TRUE),
+      ),
+      'required' => array(
+        ':input[name="' . $fhsname . '"]' =>  array('checked' => TRUE),
+      ),
+    );
+
+    $form['#after_build'][] = 'profile2_edit_anunciante_form_form_after_build';
+
+    global $user;
+    if (!in_array(3, array_keys($user->roles))) {
+      $form['profile_anunciante']['field_tarjeta_present']['#access'] = FALSE;
+    }
+  }
+
+  // PREPARA STAT, STEP, BOTONES NEXT/ATRAS
+  $form['#steps'] = $steps['path'];
+
+  if (isset($form['actions'])) {
+    $form['next'] = $form['actions']['submit'];
+    $form['next']['#next'] = true;
+  }
+
+  unset($form['actions']);
+  unset($form['actions']['submit']);
+
+  $form['next'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save + Next'),
+    '#next' => TRUE,
+    '#weight' => 101,
+  );
+
+  $form['atras'] = array(
+    '#type' => 'submit',
+    '#value' => t('Previous'),
+    '#next' => FALSE,
+    '#weight' => 102,
+  );
+
+  //RECUPERA EL PAS ACTUAL
+
+  if (!isset($form_state['#step'])) {
+    $form_state['#step'] = _step_actual($steps['path']);
+  }
+
+  if ($form_state['#step'] == 0 || $form_state['#step'] >= count($steps['path'])-1) {
+    unset($form['atras']);
+  } else {
+    // COMPROVA SI S'HAN FET ELS PASOS ANTERIORS
+    $step = $form_state['#step'];
+  }
+
+  if ($form_state['#step'] >= count($steps['path'])-1) {
+    $form['next']['#value'] = t('Finish');
+    unset($form['next']);
+  }
+
+  $form['#steps'] = $steps['path'];
+}
+
+/**
+ * SUBMIT MULTI-STEP
+ */
+function _hipicmedia_portal_submit(&$form, &$form_state){
+  module_load_include('inc', 'node', 'node.pages');
+
+  $uid = $form_state['build_info']['args'][0]->uid;
+  if (!$uid) {
+    global $user;
+    $uid = $user->uid;
+  }
+
+  if (!isset($form_state['#step'])){
+    $form_state['#step'] = 0;
+  }
+
+  // MARCA ESTE PASO COMO YA VISITADO
+  _hipicmedia_portal_enviamail($form_state['#step']);
+
+  if ($form_state['clicked_button']['#next']){
+    if ($form_state['#step'] < (count($form['#steps']))) $form_state['#step']++;
+    $forma_de_pago = NULL;
+
+    $_SESSION['get_step_forward'] = TRUE;
+
+    if (isset($form_state['complete form']['profile_anunciante_facturacion'])) {
+      $lang=$form_state['complete form']['profile_anunciante_facturacion']['field_formas_de_pago']['#language'];
+      //$lang='es';
+      $forma_de_pago = $form_state['complete form']['profile_anunciante_facturacion']['field_formas_de_pago'][$lang]['#value'];
+    }
+
+    if ($forma_de_pago == 145) {
+      _crea_orden(145);
+      drupal_goto("hipicportal/registro-realizado-pago-transferencia");
+    }
+
+    if ($forma_de_pago == 147) {
+      $titular = $form_state['complete form']['profile_anunciante_facturacion']['field_titular_de_la_cuenta']['und'][0]['value']['#value'];
+      $cuenta = $form_state['complete form']['profile_anunciante_facturacion']['field_n_mero_de_cuenta']['und'][0]['value']['#value'];
+
+      _crea_orden(147, $titular, $cuenta);
+      drupal_goto("hipicportal/registro-realizado-domiciliacion");
+    }
+  }
+  else {
+    if ($form_state['#step'] > 0) {
+      $form_state['#step']--;
+      $_SESSION['get_step_back'] = TRUE;
+    }
+  }
+
+  $next_form = $form['#steps'][$form_state['#step']];
+  $form_state['redirect'] = $next_form . '/' . $uid . '/edit';
+}
+
+
+function _validation_function(&$form, &$form_state){
+  if (!isset($form_state['values']['profile_anunciante_facturacion'])) {
+    return true;
+  }
+
+  //$lang='es';
+  $lang=$form['profile_anunciante_facturacion']['field_tel_fono']['#language'];
+
+  if ($form_state['values']['profile_anunciante_facturacion']['field_tel_fono'][$lang][0]['number']<'99') {
+    form_set_error('', t('The phone number format is not right'));
+  }
+}
+
+
+
+function _crea_orden($modo_pago,$titular="No definido",$cuenta="No definido"){
+  if ($order = Hipicmedia_Order::orden_pagada_by_uid()) {
+    $data = $order->field_fecha_caducidad['und'][0]['value'];
+    drupal_set_message(t('Already have a valid order until @date. This payment will mean a one-year renewal', array('@date' => $data)), 'hipic');
+  }
+
+  global $user;
+
+  $uid = $user->uid;
+  $importe = variable_get('Ds_Merchant_Amount');
+  $order = new Hipicmedia_Order();
+  $order->crea_orden($uid, $importe, $modo_pago, $titular, $cuenta);
+}
+
+/**
+ * Modify CCK keyword checkbox element to use multicolumns.
+ */
+
+/**/
+function profile2_edit_anunciante_form_form_after_build($form, &$form_state) {
+  $lang=$form['profile_anunciante']['field_sector']['#language'];
+
+  $form['profile_anunciante']['field_sector'][$lang]['#theme_wrappers'] = array('multicolumn_options');
+  $form['profile_anunciante']['field_sector'][$lang]['#columns'] = 3;
+
+  return $form;
+}
+
+function _step_actual($steps){
+  $current_step = array_search(arg(0), $steps);
+
+  return $current_step;
+}
+
+/*************************************************************************
+/*************************************************************************
+/*************************************************************************
+*/
+function hipicmedia_portal_theme($existing, $type, $theme, $path) {
+  return array(
+    'anunciante_contrato_form' => array(
+      'render element' => 'form',
+      'path' => drupal_get_path('theme', 'hipic').'/templates/forms',
+      'template' => 'anunciante_contrato',
+    ),
+    'multicolumn_options' => array(
+      'render element' => 'element',
+      'arguments' => array('element' => NULL),
+    ),
+  );
+}
+
+/**
+ * Output a list of options in the number of columns specified by the element's
+ * #columns value.
+ */
+
+function theme_multicolumn_options($element) {
+  $stripped_element = array_values($element);
+  $element = $stripped_element[0];
+  // Initialize variables.
+  $output = '';
+  $total_columns = $element['#columns'];
+
+  if (!isset($element['#options'])) return;
+  $total_options = count($element['#options']);
+  $options_per_column = ceil($total_options / $total_columns);
+  $keys = array_keys($element['#options']);
+  $type = $element[$keys[0]]['#type'];
+
+  // Start wrapper div.
+  $output .= '<div class="multicolumn-options-wrapper">';
+  $current_column = 1;
+  $current_option = 0;
+
+  while ($current_column <= $total_columns) {
+    // Start column div.
+    $output .= '<div class="multicolumn-options-column" style="width: ' . 100 / $total_columns . '%; float: left">';
+    // Keep looping through until the maximum options per column are reached,
+    // or you run out of options.
+    while ($current_option < $options_per_column * $current_column &&
+        $current_option < $total_options) {
+
+      // Output as either check or radio button depending on the element type.
+
+
+
+      $output .= theme($type, $element[$keys[$current_option]]);
+      $output.=$element[$keys[$current_option]]['#title'];
+
+      $output.='<br/>';
+      $current_option++;
+    }
+    // End column div.
+    $output .= '</div>';
+    $current_column++;
+  }
+  // End wrapper div.
+  $output .= '</div>';
+  $output .= '<div class="clear-block"></div>';
+  return $output;
+}
+
+function _is_admin_or_editor() {
+  global $user;
+
+  if (in_array(3, array_keys($user->roles)) || in_array(10, array_keys($user->roles))) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Retorna el nodo portal_orden correspondiente al usuario $uid (o actual si NULL)
+ * Comprueba que la orden esté vigente
+ *
+ * @return node
+ */
+
+function _hipicmedia_portal_acceso_paso($paso, $uid = NULL){
+  if (!$uid) {
+    global $user;
+    $uid = $user->uid;
+  }
+
+  $access = FALSE;
+
+  switch($paso) {
+    case 0:
+      return TRUE;
+/*
+      $profile = profile2_load_by_user($uid, 'anunciante');
+
+      if ($profile && !_is_admin_or_editor() && !isset($_SESSION['get_step_back'])) {
+        $access = FALSE;
+      } else {
+        $access = TRUE;
+      }
+*/
+      break;
+
+    case 1:
+      return TRUE;
+/*
+      $profile = profile2_load_by_user($uid, 'anunciante_articulos_descuentos');
+
+      if ($profile && !_is_admin_or_editor() && !isset($_SESSION['get_step_back']) && !isset($_SESSION['get_step_forward'])) {
+        $access = FALSE;
+      } else {
+        $access = TRUE;
+      }
+*/
+      break;
+
+    case 2:
+      return TRUE;
+/*
+      $profile = profile2_load_by_user($uid, 'anunciante_facturacion');
+
+      if ($profile && !_is_admin_or_editor() && !isset($_SESSION['get_step_back']) && !isset($_SESSION['get_step_forward'])) {
+        $access = FALSE;
+      } else {
+        $access = TRUE;
+      }
+*/
+      break;
+
+    case 3:
+      return TRUE;
+/*
+      $profile = profile2_load_by_user($uid, 'anunciante_facturacion');
+
+      if ($profile && !_is_admin_or_editor() && !isset($_SESSION['get_step_forward'])) {
+        $access = FALSE;
+      } else {
+        $access = TRUE;
+      }
+*/
+
+    break;
+
+  }
+
+  unset($_SESSION['get_step_back']);
+  unset($_SESSION['get_step_forward']);
+
+  return $access;
+}
+
+/**********************************/
+/**********************************/
+/************* EMAILS *************/
+/**********************************/
+/**********************************/
+
+/**
+ * Sends an email when a node is added
+ */
+function _hipicmedia_portal_enviamail($step) {
+  global $user;
+  $email = variable_get('hipicmedia_mail_portal', 'portal@hipicmedia.com');
+
+  $params = array('uid' => $user->uid, 'step' => $step);
+  drupal_mail('hipicmedia_portal', 'hipicmedia_portal_step'. $step, $email , user_preferred_language($user), $params);
+}
+
+/**
+ * Implements hook_mail()
+ *
+ * Sends an email when a node is added
+ */
+function hipicmedia_portal_mail($key, &$message, $params) {
+  global $base_url, $base_path;
+
+  $email = variable_get('hipicmedia_mail_portal', 'portal@hipicmedia.com');
+  $message['to'] = $email;
+  $message['subject'] = t('Advertiser profile edited. STEP @step', array('@step' => $params['step'] + 1));
+  $message['body'][] = t('It has created or edited user-advertiser profile. STEP @step', array('@step' => $params['step'] + 1));
+  $message['body'][] = t('Link: !link', array(
+    '!link' => l($base_url . $base_path . 'user/' . $params['uid'], $base_url . $base_path . 'user/' . $params['uid'])));
+
+  watchdog('hipic_sermepa', '(mail edición datos portal)<pre>'.print_r($message,true).'</pre>');
+}
+
+/**
+ * VALIDA SI CAL EL CIF
+ *
+ * @param unknown_type $element
+ * @param unknown_type $form_state
+ * @param unknown_type $form
+ */
+function valida_cif($element, &$form_state, $form) {
+  $lang = 'es';
+
+  $v = $form_state['values']['profile_anunciante_facturacion']['field_documento_main'][$lang];
+  $n = $form_state['values']['profile_anunciante_facturacion']['field_nif'][$lang][0]['nif'];
+
+  if ($v == 143 && empty($n)) {
+    form_error($element, t('CIF is required'));
+  }
+}
+
+function valida_cif_company($element, &$form_state, $form) {
+  $v = $form_state['values']['profile_anunciante_facturacion']['field_documento_main']['es'];
+
+  $n = $element['es'][0]['value']['#value'];
+  if ($v == 143 && empty($n)) {
+    form_error($element, $element['es'][0]['value']['#title'].' is required');
+  }
+}
+
+function valida_cuenta($element, &$form_state, $form) {
+  $lang = 'und';
+
+  $v = $form_state['values']['profile_anunciante_facturacion']['field_formas_de_pago']['es'][0]['tid'];
+  $n = $element[$lang][0]['value']['#value'];
+
+  if ($v == 147 && empty($n)) {
+    form_error($element, $element['und'][0]['value']['#title'].' is required');
+  }
+}
+

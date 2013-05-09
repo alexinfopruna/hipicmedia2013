@@ -1,0 +1,19 @@
+diff --git a/legal.module b/legal.module
+index 2ef217c..b032916 100644
+--- a/legal.module
++++ b/legal.module
+@@ -420,6 +420,14 @@ function legal_user_login(&$edit, $account) {
+     ->fetchAllAssoc('uid');
+   $signatory = array_pop($result);
+ 
++  if ((arg(0) === 'modal_forms') && (arg(1) === 'ajax') && (arg(2) === 'login')) {
++    $dest = '';
++    if (isset($query['destination'])) {
++      $dest = '&destination=' . $query['destination'];
++    }
++    $_GET['destination'] = 'legal_accept/' . $signatory->uid . '/' . md5($signatory->name . $signatory->pass . $signatory->login) . $dest;
++    return;
++  }
+   drupal_goto('legal_accept/' . $signatory->uid . '/' . md5($signatory->name . $signatory->pass . $signatory->login), array('query' => $query));
+ }
+ 

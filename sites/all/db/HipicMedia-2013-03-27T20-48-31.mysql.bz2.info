@@ -1,0 +1,8 @@
+filename = "HipicMedia-2013-03-27T20-48-31"
+description = ""
+datestamp = "1364413757"
+generator = "Backup and Migrate (http://drupal.org/project/backup_migrate)"
+generatorversion = "7.x-2.x"
+sites[0][version] = "7.14"
+sites[0][name] = "HipicMedia"
+sites[0][url] = "http://www.prod.hipicmedia.com/es"

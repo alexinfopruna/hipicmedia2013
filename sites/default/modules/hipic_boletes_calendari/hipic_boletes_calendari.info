@@ -1,0 +1,14 @@
+name = hipic_boletes_calendari
+description = Presenta bolitas (images) de color (tipo de evento) sobre la cuadrícula del calendario (module calendar)
+core = 7.x
+files[] = hipic_boletes_calendari.module
+stylesheets[all][] = hipic_boletes_calendari.css
+dependencies[] = calendar (>=3.1)
+package = Hipicmedia 
+
+; Information added by drupal.org packaging script on 2012-07-04
+version = "7.x-1.0"
+core = "7.x"
+project = "hipic_boletes_calendari"
+datestamp = "1335183978"
+

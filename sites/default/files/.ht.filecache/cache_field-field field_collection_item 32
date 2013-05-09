@@ -1,0 +1,1 @@
+O:8:"stdClass":4:{s:3:"cid";s:30:"field:field_collection_item:32";s:7:"created";i:1368096510;s:6:"expire";i:0;s:4:"data";a:3:{s:14:"field_concepto";a:0:{}s:27:"field_imagen_portal_anuncio";a:0:{}s:12:"field_precio";a:1:{s:3:"und";a:1:{i:0;a:3:{s:5:"value";s:18:"3000€ a negociar";s:6:"format";N;s:10:"safe_value";s:18:"3000€ a negociar";}}}}}

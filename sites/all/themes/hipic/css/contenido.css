@@ -1,0 +1,258 @@
+/* @override http://local.hipicmedia.com/sites/all/themes/hipic/css/contenido.css?mb0exd */
+
+/*
+ * CSS DE JUAN
+ */
+
+/*
+COLORES:
+
+SEPIA #F1EEE8
+GRIS #DDDBD5
+GRIS FOSC #8E8883
+GRANATE #990066
+MARRO #665348
+
+FONT #666
+BORDER_CLAR #AAA
+BORDER_FOSC #999
+*/
+
+
+/******
+*********CALENDARIO ***********/
+.section-calendar .node-article-footer{background-color: #FFFFCC;}
+.section-calendar .node-event .field-name-title-field{font-weight:bold;}
+.section-calendar .node-event .field-type-text-with-summary{float:right;}
+.calendario-evento-highlight .block-title{font-size:1.8em;}
+#block-block-16{float:left;}
+/***************************
+***************GLOBAL******/
+
+
+h1.title{margin:-74px 288px 12px 173px;}
+
+/*******************************************************************************/
+/************* CSS PARA HOME   *********************************************/
+/*******************************************************************************/
+#search-api-page-search-form-resultados-de-b-squeda-general{margin-top:-27px}
+#block-views-calendar-test-block-1{margin-bottom:20px}
+/*.two-sidebars .region-sidebar-second, .sidebar-second .region-sidebar-second{margin-top:-65px;}*/
+#block-locale-language{margin-right:0px;}
+h1.title {width:530px;}
+#block-views-home-biblioteca-de-v-deos-block .view-home-biblioteca-de-v-deos{width:447px; padding:3px 1px 1px 1px;}
+#block-locale-language{margin-top:-9px;}
+/*******************************************************************************/
+/************* CSS PARA NOTICIAS   *********************************************/
+/*******************************************************************************/
+
+/* PON AQUI TU CSS */
+#navigation{margin-left:173px;max-width:702px}
+.bloque-login-hipic {margin-right:-99px;}
+.section-noticias .node-article{padding:10px;}
+	.section-noticias .node-article .field-name-title-field{ color:#453332; font-weight:bold; font-size:1.4em; padding-bottom:5px}
+	.section-noticias .node-article .field-name-field-image{float:left;width:225px}
+	.section-noticias .node-article .field-name-body{line-height:1.6em;  }
+	.node-article .field-type-text-with-summary:first-child {font-weight:bold; margin-bottom:10px; width:700px}
+.section-noticias .node-article-footer{width:98%;float:left; margin-bottom:20px; border-radius: 0 0 6px 6px;background-color:#FFC; border-color:1px solid #bbbbbb}
+	.section-noticias .node-article-footer .fuente_articulo{float:left;}
+		.section-noticias .node-article-footer .fuente_articulo .label_source,
+		.section-noticias .node-article-footer .fuente_articulo .field-name-field-enlace{float:left;}
+		.section-noticias .fl{line-height: 8px; margin-top: 0;}
+ 	 .page-noticias.section-noticias .node-article-footer #block-widgets-s-socialmedia-share-default{
+		 margin-top:20px;
+		 float:left;}
+	 .section-noticias .node-article-footer #block-widgets-s-socialmedia-share-default{float:right;}
+.section-noticias h3{font-size:1.3em;}
+	#block-search-api-page-buscador-noticias-pagina{margin-bottom:0px}
+
+.view-apartado-noticias{}
+	.tabla-noticias td{padding:10px 0;}
+	.view-apartado-noticias .views-field-title a{font-weight:bold; color:#000;}
+.view-bienvenidos-a-hipic-media .views-field-body a,
+.view-apartado-noticias .views-field-body a { color: #666; font-size: 12px; font-weight: normal; text-decoration: none }
+	.tabla-noticias img{margin:0 10px 0 6px;}
+#video-home{height:287px; padding-top: 8px; width: 708px;}
+#text-player-home{padding:0 0 0 3px; width: 210px}
+
+.section-noticias h2#page-title { border-bottom: 1px solid #CCC; margin-bottom: 12px; padding-bottom: 6px }
+
+.tabla-noticias tbody {
+    vertical-align: top;
+}
+
+.tabla-noticias td {
+    padding: 10px 20px 10px 10px;
+}
+
+.section-noticias .buscador-seccion,
+body.not-logged-in.section-noticias.node-type-article .buscador-seccion { margin: -45px 0 60px; height: auto }
+.section-noticias.node-type-article .buscador-seccion { margin: -90px 0 60px }
+.section-noticias .buscador-seccion form { margin: 0; padding: 0; overflow: hidden }
+.section-noticias .buscador-seccion .form-item { margin: 0 }
+.section-noticias .buscador-seccion input.form-submit { margin-bottom: 0 }
+
+.tabla-noticias .view-filters { }
+.tabla-noticias .view-filters form { background-color: transparent; margin: -42px 0 12px; padding: 0 }
+.tabla-noticias .view-filters form label { display: block; float: left; margin: 0 10px 0 0; padding: 0; line-height: 24px }
+.tabla-noticias .view-filters form .views-widget { display: block; float: left; margin: 0; padding: 0 }
+
+/*******************************************************************************/
+/************* CSS PARA EVENTOS   *********************************************/
+/*******************************************************************************/
+
+/* PON AQUI TU CSS */
+
+
+/*******************************************************************************/
+/************* CSS PARA HIPICMARKET   *********************************************/
+/*******************************************************************************/
+
+/* PON AQUI TU CSS */
+
+#block-search-api-page-buscador-articulos-market{display:none; visibility:hidden;}
+.menu-categoria ul{width:168px}
+.node-item-hipicmarket{border-bottom:1px #000 solid;}
+
+	article.node-item-hipicmarket .col-first{width:340px; float:left;}
+		article.node-item-hipicmarket .col-first .field-name-body {
+			width:342px;
+			padding:7px;
+			color:#464646;
+			font-weight:normal;
+			font-size: 1.2em;
+			line-height: 21px;
+			border:2px #ccc solid;
+			background:#fff;}
+
+		article.node-item-hipicmarket .col-first .field-name-field-image .field-item{
+			margin:0 7px 5px 0;
+			float:left;}
+
+	article.node-item-hipicmarket .col-last{
+		width:350px;
+		float:right;}
+
+		.node-item-hipicmarket .field-name-body{color:#333333; font-size:1.4em; font-weight:bold; width:650px;}
+	.campos_form{display:none;}
+		.node-item-hipicmarket .field-label{color:#990066; float:left;}
+	article.node-item-hipicmarket .fake-input{background-color:transparent; border:0;padding:0; width:300px; float:left;margin-bottom:5px}
+		.hipicmarket_animal_1{float:left; margin-left:50px; width:300px; margin-top:5px;}
+		.hipicmarket_animal_2{float:left; width:320px;}
+
+		.row-accesorios{float:left; margin-left:50px; width:300px; margin-top:5px;}
+
+		.hipicmarket_animal_observaciones{float:left; margin-left:50px;width:320px;}
+	.section-hipicmarket .node-article-footer #block-widgets-s-socialmedia-share-default{float:right;}
+	.h2_hipicmarket{margin-top:20px;}
+
+	.node-type-item-hipicmarket .h2_hipicmarket{margin-top:30px;}
+
+		.hipic_animal_left{float:left}
+		.hipic_animal_right{float:right; margin-left:20px;}
+
+	.view-hipicmarket-l0,
+	.view-hipicmarket-l1{}
+		.view-hipicmarket-l0 .td-listado-market,
+		.view-hipicmarket-l1 .td-listado-market,
+		.view-hipicmarket .td-listado-market{
+			position:relative;
+			width:340px;
+			float:left;}
+			.view-hipicmarket-l1 .td-listado-market .views-field-title{
+				margin-bottom:6px;
+				font-weight:bold;}
+
+		.view-hipicmarket-l0 .td-listado-market.col-1,
+		.view-hipicmarket-l1 .td-listado-market.col-1,
+		.view-hipicmarket .td-listado-market.col-1{margin-right:20px;}
+			.view-hipicmarket-l0 .td-listado-market .views-field-field-image,
+			.view-hipicmarket-l1 .td-listado-market .views-field-field-image,
+			.view-hipicmarket .td-listado-market .field-content.fl{
+				margin-right:10px;
+				float:left;}
+			.view-hipicmarket-l0 .td-listado-market .views-field-field-preu,
+			.view-hipicmarket-l1 .td-listado-market .views-field-field-preu,
+			.view-hipicmarket .td-listado-market .field-content:last-child{
+			/*	position:absolute; */
+				bottom:28px;
+				right:0;
+				font-weight:bold;
+				color:#322d2d;}
+
+	.node-article-footer{
+		width:710px;
+		float:left;}
+
+		.node-article-footer .info-persona{
+			float:left;}
+			.node-article-footer .info-persona .info-persona-localizacion{
+				margin:5px 0;
+				float:left;}
+					.node-article-footer .info-persona .campo{
+						margin-right:5px;
+						float:left;}
+
+/*******************************************************************************/
+/************* CSS PARA LOGIN   *********************************************/
+/*******************************************************************************/
+div.ctools-modal-content{width:auto !important;}
+div.modal-forms-modal-content{}
+		div.modal-forms-modal-content .modal-title{}
+		div.modal-forms-modal-content .h2-login{color:#fff;font-size: 1.3em;font-weight: bold;}
+		div.modal-forms-modal-content .h1-login{color:#5F0431; font-size:1.8em; font-weight:bold;}
+input, select, textarea{border: 1px solid #757575; min-height: 17px; padding: 2px;}
+#user-login .form-text, #user-pass .form-text{border: 1px solid #5D5D5D; border-radius: 4px 4px 4px 4px ;height: 20px; margin-top: 5px; padding: 3px;width: 245px;}
+div.modal-forms-modal-content .form-item label{color:#2c2c2c;}
+.login_links_footer{font-size:0.8em}
+
+div.modal-forms-modal-content div.messages{padding: 0 5px 0 25px;width: 420px;}
+
+#modal-content form{width:280px}
+div.modal-forms-modal-content .popups-container{width:auto;}
+#user-login .form-text, #user-pass .form-text{width:265px}
+/*******************************************************************************/
+/************* CSS PARA REGISTRO   *********************************************/
+/*******************************************************************************/
+
+/*ALEX: LO ANULO PARA QUE NO QUEDE OCULTO
+div.ctools-modal-content .modal-content{overflow:hidden;}
+*/
+
+/*******************************************************************************/
+/************* CSS PARA EDIT PROFILE   ***************************************/
+/*******************************************************************************/
+.page-user #content{width:100%}
+#form-edit-user, #block-block-64 {width:600px;}
+#block-block-64 { padding: 10px; background-color: #F1EEE8; margin-bottom: 12px; padding:bottom: 0; }
+.view-listado-market-usuario{margin-left: 690px; min-height: 190px; padding: 5px; width: 186px;}
+
+
+/*******************************************************************************/
+/************* CSS profile-anunciante   *******************************/
+/*******************************************************************************/
+.region-highlighted{width:100%}
+.page-profile-anunciante #content {width:100%}
+	.anunciante-contrato {padding:10px}
+	/*.block-title{font-size:1.4em; color:#000; margin-bottom:5px;}*/
+.page-profile-anunciante-contrato #content {width:100%}
+
+/*******************************************************************************/
+/************* CSS VIDEOS   *******************************/
+/*******************************************************************************/
+.section-videos .buscador-seccion { margin-top: -50px }
+.section-videos.node-type-videoclip .buscador-seccion { margin-top: -65px }
+.section-videos.node-type-videoclip h2#page-title { border-bottom: 1px solid #CCC; margin-bottom: 12px; padding-bottom: 6px }
+
+.section-videos .buscador-seccion #search-api-page-search-form-buscador-videos-pagina { margin: 0; padding: 0 }
+.section-videos.node-type-videoclip.logged-in .user-tabs .buscador-seccion { margin-top: -110px }
+
+.section-videos .node-videoclip .field-items { clear: both; }
+
+/***********/
+.item-list ul{padding:2px 4px; margin-top:6px}
+
+/******************************************************
+ *************** AJAX PROGRESS- ELEMENT INVISIBLE *****
+ *****************************************************/
+.ajax-progress-throbber { display:none }

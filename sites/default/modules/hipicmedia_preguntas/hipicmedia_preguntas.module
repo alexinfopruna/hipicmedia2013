@@ -1,0 +1,55 @@
+<?php
+/*
+ * FORM PREGUNTAS A PROFESIONALES
+ * Implements hook_[node_type]_form_alter()
+*
+* Sends an email when a node is added
+*/
+
+function hipicmedia_preguntas_form_preguntas_node_form_alter(&$form, &$form_state, $form_id)
+{
+  // Solo administrador puede editar respuestas
+  if (!user_access('administra hipicmedia')){
+    $form['field_autor_respuesta']['#access'] = FALSE;
+    $form['field_respuesta']['#access'] = FALSE;
+    //$form['#after_build'][] = 'hipic_preguntas_node_form_after_build';
+  }
+}
+
+/*******************************************************/
+/*******************************************************/
+/************* EMAILS ************************/
+/*******************************************************/
+/*******************************************************/
+
+/*
+ * Implements hook_node_insert()
+*
+* Sends an email when a node is added
+*/
+function hipicmedia_preguntas_node_insert($node) {
+  global $user;
+  $email=variable_get('hipicmedia_mail_profesionales', 'webmaster@hipicmedia.com');
+  
+  $params=array('nid'=>$node->nid);
+  if ($node->type == "preguntas") {
+    drupal_mail('hipicmedia_preguntas', 'nueva pregunta', $email , user_preferred_language($user), $params);
+  }
+}
+/*
+ * Implements hook_mail()
+*
+* Sends an email when a node is added
+*/
+function hipicmedia_preguntas_mail($key, &$message, $params)
+{
+  switch($key){
+    case 'nueva pregunta':
+      $message['to']='alexinfopruna@gmail.com';
+      $message['subject']='Nueva pregunta en usuarios/preguntas_a_profesionales';
+      $message['body'][]='Se ha introducido una nueva pregunta en usuarios/preguntas_a_profesionales. Es necesario revisarla y publicarla';
+      $message['body'][]='Link: http://dev.hipicmedia.com/node/' . $params['nid'];
+      
+      break;
+  } 
+}

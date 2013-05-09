@@ -1,0 +1,15 @@
+O:8:"stdClass":4:{s:3:"cid";s:38:"http://hm.localhost/video-home-rss.xml";s:7:"created";i:1368103198;s:6:"expire";i:-1;s:4:"data";a:4:{s:4:"path";s:18:"video-home-rss.xml";s:4:"body";s:672:"  <?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:jwplayer="http://developer.longtailvideo.com/trac/">
+  <channel>
+    <title>video_home_rss</title>
+    <link>http://hm.localhost/es/video-home-rss.xml</link>
+    <description></description>
+    <language>es</language>
+          <item>
+    <title at="Array">Cabriolas de una potra de dos días</title>
+    <link>http://hm.localhost/es/videos/central/cabriolas-una-potra-dos-dias</link>
+	<media:content url="http://hm.localhost/sites/default/files/sites/all/videos/potra.flv" />
+	<description>JWPlayer</description>
+  </item>  
+
+    </channel>
+</rss>";s:5:"title";s:0:"";s:7:"headers";a:2:{s:12:"Content-Type";s:34:"application/rss+xml; charset=utf-8";s:16:"Content-Language";s:2:"es";}}}

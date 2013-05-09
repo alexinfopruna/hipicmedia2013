@@ -1,0 +1,8 @@
+filename = "localhost-2012-06-25T22-52-43"
+description = ""
+datestamp = "1340657566"
+generator = "Backup and Migrate (http://drupal.org/project/backup_migrate)"
+generatorversion = "7.x-2.x"
+sites[0][version] = "7.14"
+sites[0][name] = "localhost"
+sites[0][url] = "http://www.hipicmedia.es/dev/"

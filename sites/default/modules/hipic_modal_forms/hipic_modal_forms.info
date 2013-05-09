@@ -1,0 +1,13 @@
+name = Hipic Modal forms
+description = This module use ctools modal feature to open some common forms in a modal window.
+dependencies[] = ctools
+core = 7.x
+configure = admin/config/development/hipic_modal_forms
+package = HipicMedia 
+
+; Information added by drupal.org packaging script on 2011-10-04
+version = "7.x-1.0"
+core = "7.x"
+project = "hipic_modal_forms"
+datestamp = "1317720424"
+

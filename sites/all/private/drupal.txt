@@ -1,0 +1,5 @@
+$GLOBALS['base_url'] => http://example.com/drupal
+base_path() => /drupal/
+request_uri() =>  /drupal/documentation?page=1
+request_path() => documentation
+current_path() => node/26419

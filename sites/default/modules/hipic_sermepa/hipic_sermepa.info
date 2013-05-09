@@ -1,0 +1,10 @@
+name = hipic_sermepa
+description = Gestiona conexion TPV con SERMEPA
+core = 7.x
+files[] = hipic_sermepa.module
+package = HipicMedia 
+
+; Information added by drupal.org packaging script on 2012-07-08
+version = "7.x-1.0"
+core = "7.x"
+project = "HipicMedia"

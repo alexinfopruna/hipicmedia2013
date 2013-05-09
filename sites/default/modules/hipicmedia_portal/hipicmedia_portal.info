@@ -1,0 +1,10 @@
+name = hipicmedia_portal
+description = Un módulo para el PORTAL de hipicmedia
+core = 7.x
+files[] = hipicmedia_portal.module
+package = HipicMedia 
+
+; Information added by drupal.org packaging script on 2012-07-08
+version = "7.x-1.0"
+core = "7.x"
+project = "Hipicportal formularios y más"

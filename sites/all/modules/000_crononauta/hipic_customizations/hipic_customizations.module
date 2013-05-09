@@ -1,0 +1,51 @@
+<?php
+
+/*
+ * Implements hipic_customizations_form_alter()
+ */
+function hipic_customizations_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'views_exposed_form') {
+    if (isset($form['field_evento_categoria_tid_i18n']) && $form['field_evento_categoria_tid_i18n']['#type'] == 'select') {
+      $form['field_evento_categoria_tid_i18n']['#type'] = 'radios';
+      unset($form['field_evento_categoria_tid_i18n']['#size']);
+      $options = $form['field_evento_categoria_tid_i18n']['#options'];
+      $new_options = array();
+      foreach($options as $id_option => $option) {
+        if (is_object($option)) {
+          foreach($option->option as $id_opt => $val_opt) {
+            $new_options[$id_opt] = $val_opt;
+          }
+        }
+        else if (is_string($option)) {
+          if ($id_option == 'All') {
+            $new_options[$id_option] = t('Show all categories');
+          }
+          else {
+            $new_options[$id_option] = $option;
+          }
+        }
+      }
+      $form['field_evento_categoria_tid_i18n']['#options'] = $new_options;
+
+      drupal_add_js(drupal_get_path('module', 'hipic_customizations') . '/js/hipic_customizations.js');
+      drupal_add_css(drupal_get_path('module', 'hipic_customizations') . '/css/hipic_customizations.css');
+
+    }
+  }
+
+  if (isset($form['legal']) && isset($form['legal']['legal_accept'])) {
+    $form['legal']['legal_accept']['#title'] = t('<strong>Accept</strong> <a href="@terms" target="_blank">Terms & Conditions</a> of Use', array('@terms' => url('legal')));
+  }
+
+  if ($form_id == 'profile2_edit_anunciante_facturacion_form') {
+    $form['#validate'][] = 'hipic_customizations_profile2_edit_anunciante_facturacion_form_validate';
+  }
+}
+
+function hipic_customizations_profile2_edit_anunciante_facturacion_form_validate($form, &$form_state) {
+  if ($form_state['values']['profile_anunciante_facturacion']['field_documento_main']['es'][0]['tid'] != '143' &&
+  empty($form_state['values']['profile_anunciante_facturacion']['field_segundo_apellido']['es'][0]['value'])) {
+    form_set_error('profile_anunciante_facturacion][field_segundo_apellido', t('Field second surname is mandatory'));
+  }
+}
+

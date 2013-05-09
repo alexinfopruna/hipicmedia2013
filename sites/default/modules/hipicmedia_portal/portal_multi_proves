@@ -1,0 +1,175 @@
+<?php
+/**
+ * @file
+ * 
+ * 
+ *
+ * @author Kálmán Hosszu - hosszu.kalman@gmail.com - http://premiumcmsthemes.com http://www.kalman-hosszu.com
+ */
+ 
+function portal_menu() {
+  return array(
+    'multinode' => array(
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+      'page callback' => 'form_node1',
+      'page arguments' => array(array('form_node1'), array('form_node2')),
+    ),
+        
+    'multiform_test' => array(
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+      'page callback' => 'multiform_get_form',
+      'page arguments' => array(array('my_profile2_form'), array('portal_test2')),
+    ),
+        
+    'multiadd' => array(
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+      'page callback' => 'portal_test1',
+//      'page arguments' => array('xxx','yyy')  
+    ),
+  );
+}
+
+
+function form_node1($form,&$form_state){
+  if (!function_exists('node_add')) {
+    module_load_include('inc', 'node', 'node.pages');
+  }
+  
+  return node_add('article');
+  
+}
+
+function portal_test1() {
+  global $user;
+  
+/*  
+ * 
+ * 
+*/
+$a=null;
+return drupal_render(my_profile_form(null,$a));
+return;
+
+
+/*  
+
+  module_load_include('inc', 'profile2', 'profile2_page');
+  $profile2 = profile2_load_by_user($user, 'profile_test');
+  $entity_form = entity_ui_get_form('profile2', $profile2, 'add');
+  dsm($entity_form);  
+  return  $entity_form;
+*/  
+ /* 
+  module_load_include('inc', 'user', 'user.pages');
+  //$account = user_load(1);
+  return drupal_get_form('user_profile_form', $user);
+  
+    
+  * 
+  *  */ 
+/*
+ * 
+ * 
+  if (!function_exists('node_add')) {
+    module_load_include('inc', 'node', 'node.pages');
+  }
+  
+  return node_add('article');
+
+*/
+}
+
+
+
+function my_profile_form($form, &$form_state) {
+  global $user;
+  if (!isset($form_state['profiles'])) {
+    $profile = profile2_load_by_user($user, 'profile_test');
+    if (!$profile) {
+      $profile = profile_create(array(
+          'type' => 'profile_test',
+          'uid' => $user->uid
+      ));
+    }
+    $form_state['profiles'][$profile->type] = $profile;
+  }
+
+  // Use field attach form and handle the fields yourself:
+  //field_attach_form('profile2', $profile, $form, $form_state);
+  // Or use profile2 API which is simpler
+  profile2_attach_form($form, $form_state);
+
+  $form_state['redirect']='user/9/edit/profile_test';
+  $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+  );
+  return $form;
+}
+
+function my_profile2_form($form, &$form_state) {
+  global $user;
+  if (!isset($form_state['profiles'])) {
+    $profile = profile2_load_by_user($user, 'profile_test2');
+    if (!$profile) {
+      $profile = profile_create(array(
+          'type' => 'profile_test2',
+          'uid' => $user->uid
+      ));
+    }
+    $form_state['profiles'][$profile->type] = $profile;
+  }
+
+  // Use field attach form and handle the fields yourself:
+  //field_attach_form('profile2', $profile, $form, $form_state);
+  // Or use profile2 API which is simpler
+  profile2_attach_form($form, $form_state);
+
+  $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+  );
+  return $form;
+}
+
+
+function portal_test2($form) {
+  $form['submit'] = array('#type' => 'submit', '#value' => 'ssave', '#submit' => array('portal_test2_submit_button'));
+  $form['delete'] = array('#type' => 'submit', '#value' => 'ddelete', '#submit' => array('portal_test_delete'));
+  $form['test2'] = array('#type' => 'textfield', '#title' => 'test2');
+  return $form;
+}
+
+function portal_test_submit_button($form, $form_state) {
+  drupal_set_message($form['#form_id'].$form['#form_id']['test2']['#value'] . ' portal_test2_submit_button');
+}
+
+function portal_test_delete($form, $form_state) {
+  drupal_set_message($form['#form_id'] . 'portal_test_delete');
+}
+
+function portal_form_alter(&$form, &$form_state){
+  dsm($form);
+  drupal_set_message('el form es: '.$form['#action']);
+  
+ // if (strstr($form['#action'],))
+  $form['#submit'][] = 'my_submit_handler';
+
+  $form['atras'] = array(
+      '#type' => 'submit',
+      '#value' => t('atras'),
+  );
+  
+  
+}
+
+function my_submit_handler(&$form, &$form_state){
+    
+  $form_state['redirect']='user/9/edit/profile_test';
+
+}
+
+

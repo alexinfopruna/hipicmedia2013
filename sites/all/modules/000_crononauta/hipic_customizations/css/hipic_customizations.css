@@ -1,0 +1,11 @@
+/* CALENDAR FILTERS */
+
+.view-calendar-test .views-widget-filter-field_evento_categoria_tid_i18n > label { display: none }
+.view-calendar-test .views-widget-filter-field_evento_categoria_tid_i18n .form-type-radio { position: relative; overflow: hidden;
+  width: 50%; float: left; }
+.view-calendar-test .views-widget-filter-field_evento_categoria_tid_i18n .form-type-radio input { position: absolute; top: -4em; }
+.view-calendar-test .views-widget-filter-field_evento_categoria_tid_i18n .form-type-radio label { display: block; padding: 5px 10px }
+.view-calendar-test .views-exposed-form input.form-submit { width: 1px; height: 1px; background-color: transparent;
+  margin: 0; padding: 0 }
+
+

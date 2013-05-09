@@ -1,0 +1,184 @@
+html{
+  line-height:1em;
+}
+body{
+  font-family: Arial, Helvetica, "Trebuchet MS", sans-serif;
+  color:#666;
+  font-size:12px;
+  min-height:100%;
+}
+
+
+
+h1{
+  color:#5F0431;
+  font-weight:normal;
+  font-size:1.3em;
+  margin:0px;
+}
+
+h2{
+  color:#5F0431;
+  font-weight:normal;
+  font-size:2em;
+  margin:0px;
+  
+  line-height: 1.2em;
+  margin-bottom: 5px; 
+}
+
+h3{
+  color:#5F0431;
+  font-weight:bold;
+  font-size:1.1em;
+  margin:0px;
+  padding:0px;
+}
+
+p{margin:0em 0em 0.8em 0em ;}
+
+strong, b{color:black;}
+
+a{color:#5F0431;text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+.hide{display:none;}
+
+.bd
+{
+	font-weight:bold;
+}
+
+.fl{float:left;}
+
+.fr{float:right;}
+
+.center{margin-left:auto;margin-right:auto;}
+
+.clear{clear:both;max-height:0;}
+.cb{clear:both;}
+
+.sep-dere{margin-right:6px}
+.sep-isqui{margin-left:6px}
+
+.debug-var{padding:10px;border:red solid 1px;margin:3px;}
+
+table{margin:0;padding:0;}
+
+.borde-top .view-content
+{
+  border-top:#CCC solid 1px;
+  padding-top:12px;
+  margin-top:6px;
+}
+
+
+form{
+	padding:10px;
+	background-color: #F1EEE8;
+	padding-bottom:40px;
+	margin-bottom:12px;
+}
+
+#modal-content form{
+  background-color: transparent;
+}
+
+
+
+input, select, textarea{
+	border:#BBB solid 1px;
+	min-height:17px;
+	background:url(img/input-bg.png);
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;	
+}
+textarea{background:white;}
+
+#edit-cancel,input[type=submit], .boto-blau{
+	background-image: none;
+	border:none;
+	color:white;
+	background-color: #2A98E6;
+	margin:0 10px 0 auto;	
+	
+	float: right;
+	margin-bottom: 15px;
+	padding:6px;	
+	
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;	
+}
+
+.boto-blau{
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;  
+  padding:6px;  
+
+}
+
+input[type=image]{
+	border: none;
+	position: relative;
+	top: 4px;
+}
+
+
+input.error{background:#FF8181;}
+
+
+
+/*
+SUBMENU
+*/
+.menu-categoria ul.nice-menu ul li, ul.nice-menu-right ul li{
+	background-image: none;
+	background-color: transparent;
+	border:none;
+}
+.menu-categoria ul.nice-menu-right ul{
+	background-image: url(img/market_bg_submenu.png);
+	background-repeat: no-repeat;
+	border:none;	
+
+	margin-top:-15px;
+	margin-left:20px;
+	padding:15px 0 15px 30px;
+}
+
+
+
+.menu-categoria ul.nice-menu-right ul a{
+	color:white;
+}
+
+.market-quita-anuncio{width:100%;margin-left: 15px;}
+/******************************************/
+
+/* MESSAGES DIALOG */
+.messages li{list-style:none;}
+.ui-dialog{background:#F1EEE8}
+.ui-dialog-titlebar
+{
+  background:none;
+  border:none;
+}
+
+.ui-widget-overlay {
+background:black;
+opacity: .6;
+filter: Alpha(Opacity=60);
+}
+
+.messages .warning{display:none}
+.messages .error{display:none}
+/*.messages .error{display:none}*/
+/*.messages{display:none}*/
+
+
+.password-suggestions{display:none !important;}
+/* ESCONDE COLUMNA DERE */
+.page-node-add #content{width:968px;}
+.page-node-edit #content{width:968px;}
+
+body.page-node-849login #content{width:968px}

@@ -1,0 +1,10 @@
+name = hipicmarket
+description = Crea, valida, processa el form de ANUNCI HIPIC MARKET
+core = 7.x
+files[] = hipicmarket.module
+package = HipicMedia 
+
+; Information added by drupal.org packaging script on 2012-07-08
+version = "7.x-1.0"
+core = "7.x"
+project = "HipicMedia"

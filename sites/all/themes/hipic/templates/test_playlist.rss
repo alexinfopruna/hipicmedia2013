@@ -1,0 +1,23 @@
+  <?xml version="1.0" encoding="utf-8" ?>
+  <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:jwplayer="http://developer.longtailvideo.com/trac/">
+  <channel>
+    <title>video_home_rss</title>
+    <link>http://dev.hipicmedia.com/es/video-home-rss.xml</link>
+    <description></description>
+    <language>es</language>
+          <item>
+    <title at="Array">Video HOME</title>
+    <link>http://dev.hipicmedia.com/es/node/4</link>
+  <media:content url="http://dev.hipicmedia.com/sites/default/files/sites/all/videos/video.mp4" />
+  <description>JWPlayer</description>
+  </item>  
+
+    <item>
+    <title at="Array">PERA</title>
+    <link>http://dev.hipicmedia.com/es/videos/central/pera</link>
+  <media:content url="http://dev.hipicmedia.com/sites/default/files/sites/all/videos/pera_0.flv" />
+  <description>JWPlayer</description>
+  </item>  
+
+    </channel>
+</rss>

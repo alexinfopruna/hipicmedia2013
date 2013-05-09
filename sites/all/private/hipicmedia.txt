@@ -1,0 +1,189 @@
+GIT Vu8dX8AH2JM9
+NOOOOO GIT password Tz2nZ7tA6kA9
+NOOOOOOO GIT password zk4Kh4gM4gE3
+
+
+xavi: 647721955
+pilar: 618042165   938456907
+
+http://www.hipicmedia.com
+http://dev.hipicmedia.com (DESARROLLO)
+
+1&1.es
+------------------PANEL------------------------
+------------------PANEL------------------------
+------------------PANEL------------------------
+------------------PANEL------------------------
+PANEL 1&1
+usr: u67125225
+pass:    administracionhipic
+usr: u67125225
+pass: administracionhipic  
+NOOOOOO pass: hipic1052012
+
+-----------------------------------------------------
+
+ADMIN DRUPAL
+alex
+Alkaline.10
+
+hipicadmin
+Alkaline10
+-----------------FTP----------------------------
+-----------------FTP----------------------------
+-----------------FTP----------------------------
+-----------------FTP----------------------------
+FTP (hipicmedia):
+User: u67125225
+password: 13Alkaline   
+NOOOOOOO ****password: hipic1052012   ****NOOOOOOO
+
+
+-----------------------------------------------------
+FTP Hipicportal y HipicMarket (.es y .com)
+pass: hipic1052012
+login: u68905739
+-----------------------------------------------------
+
+
+
+-----------------SSH---------------------------------
+-----------------SSH---------------------------------
+-----------------SSH---------------------------------
+-----------------SSH---------------------------------
+CONSOLA SSH (hipicmedia):
+hipicmedia.com
+User: u67125225   
+password: 13Alkaline
+
+NOOOOOpassword: hipic1052012
+
+
+
+
+  
+  
+
+
+---------------- GIT -------------------
+---------------- GIT -------------------
+---------------- GIT -------------------
+---------------- GIT -------------------
+SSH: 
+u67125225
+hipic1052012
+
+repo
+---GOOGLE---
+https://code.google.com/p/hipicmedia-git/
+machine code.google.com
+login alexinfopruna
+password Tz2nZ7tA6kA9
+NOOOOOOOOO password zk4Kh4gM4gE3
+
+
+
+---ASSEMBLA---???????
+
+hipicmedia
+hipicmedia-git
+?????????????????????????'''
+
+
+
+ git clone https://code.google.com/p/hipicmedia-git/
+ 
+ (update)
+ git pull 
+
+SVN 
+https://subversion.assembla.com/svn/hipicmedia/
+alkaline
+
+ 
+-----------------MYSQL------------
+-----------------MYSQL------------
+-----------------MYSQL------------
+-----------------MYSQL------------
+MYSQL
+DEV***********
+      'database' => 'db419588044',
+      'username' => 'dbo419588044',
+      'password' => 'alkaline',
+      'host' => 'db419588044.db.1and1.com',
+
+LOCAL*********
+      'database' => 'hipicmedia',
+      'username' => 'root',
+      'password' => 'madelaine',
+      'host' => 'localhost',
+
+
+
+PROD**********
+      'database' => 'db416105782',
+      'username' => 'dbo416105782',
+      'password' => 'alkaline',
+      'host' => 'db416105782.db.1and1.com',
+
+
+TEST***********
+test.hipicmedia.com
+      'database' => 'db433126534',
+      'username' => 'dbo433126534',
+      'password' => 'Alkaline10',
+      'host' => 'db433126534.db.1and1.com',
+
+
+---------------- OPEN X 2-------------------
+---------------- OPEN X 2-------------------
+---------------- OPEN X 2-------------------
+---------------- OPEN X 2-------------------
+LOGIN 
+http://www.hipicmedia.com/openx_2.8.0
+hipicadmin
+Alkaline10
+
+
+Nombre de la base de datos :  db427134427
+
+
+Nombre del Host : db427134427.db.1and1.com
+Puerto :  3306
+Nombre de usuario : dbo427134427
+PASS: Alkaline10
+Descripci�n : hm_openx2
+Versi�n : MySQL5.0
+Estado :   Se ha iniciado la configuraci�n
+
+REGISTRE
+hipicadmin
+Alkaline10
+
+
+--------------- OPEN X -------------------
+---------------- OPEN X -------------------
+---------------- OPEN X -------------------
+---------------- OPEN X -------------------
+MALOOOOO
+MALOOOOO
+MALOOOOO
+MALOOOOO
+
+http://openx.hipicmedia.com (en realitat hipicmedia.com/openx)
+
+
+Account:
+hipcmedia
+Alkaline10
+
+Nombre de la base de datos :  db417019935
+Nombre del Host : db417019935.db.1and1.com
+Puerto :  3306
+Nombre de usuario : dbo417019935
+PASS: Alkaline10
+Descripci�n : hm_openx
+Versi�n : MySQL5.0
+
+
+

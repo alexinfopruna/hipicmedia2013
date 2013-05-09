@@ -1,0 +1,93 @@
+/*
+BANNERS
+*/
+
+.banner{
+	min-height:35px;
+	background:#FAFAFA;
+	
+	/*border:#AAA solid 1px;*/
+	/*margin-left:6px;*/
+	padding:0;
+}
+
+.dere{
+	width:248px;
+}
+
+/*.footer{position:relative;bottom:0px;}*/
+
+.banner-a{
+	width:250px;
+	height:400px;
+}
+.banner-b{
+	width:250px;
+	height:125px;
+}
+
+.banner.footer.banner-b.last{
+margin-right:0px}
+
+.banner-c{
+	width:450px;
+	height:125px;
+}
+
+.banner-d{
+	width:250px;
+	height:250px;
+}
+.banner-e{
+	width:690px;
+	height:45px;
+}
+
+.footer{float:left;}
+.banner.footer{margin-right:11px;}
+
+/*
+	PEU AL FRONT
+*/
+.front .banner-b6
+{
+  /*display:none;*/
+visibility:hidden;
+}
+/*
+.isqui-vacia{
+  margin-left:265px;
+}
+*/
+
+
+#main .footer.banner-c{
+/*clear:both;*/
+
+}
+
+.video-semana{
+height:350px;
+}
+
+.region-banners-peu{
+  clear:both;
+  position:relative;
+/*top:-125px;*/
+}
+
+/*.banner-central-0{margin-top:8px;width:690px; height:70px}*/
+.banner-central-0{width:450px;height:125px;/*float:left;*/}
+.banner-central-1{width:690px;height:70px;/*float:left;*/}
+.banner-central-bajo-player{
+  width:690px;
+  height:45px;
+  margin-top:6px;
+  margin-left:11px;
+  /*float:left;*/}
+
+
+.banner-institucional{
+	width:250px;
+	height:70px;
+}

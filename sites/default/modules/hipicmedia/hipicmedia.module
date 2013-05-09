@@ -1,0 +1,404 @@
+<?php
+define('DEV',true);
+
+module_load_include('inc', 'hipicmedia', 'hipicmedia_settings');
+
+
+/**
+ * Implements hook_menu
+ *
+ * Crea URL admin/config/hipicmedia
+ */
+function hipicmedia_menu() {
+
+  $items = array();
+
+  $items['admin/config/hipicmedia'] = array(
+      'title' => t('Configuración de hipicmedia'),
+      'description' => t('De momento, autoplay'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('hipicmedia_admin'),
+      'access arguments' => array('administra hipicmedia'),
+      'type' => MENU_NORMAL_ITEM,
+  );
+
+  /**
+   * @todo access > usuarios NO VAAAA NI PATRAS ???? SOLUCIONAT AMB NODE ACCESS
+   * segurament colisiona amb algun altre mòdul ??
+   */
+  $items['usuarios/%']['access arguments'] = array('ver apartado usuarios');
+  $items['usuarios']['access arguments'] = array('ver apartado usuarios');
+
+
+
+  return $items;
+}
+
+/**
+ * hook_menu_alter
+ * @param unknown_type $items
+ */
+
+/**/
+function hipicmedia_menu_alter(&$items) {
+  //$ruta = drupal_get_normal_path('usuarios/preguntas-a-profesionales');
+  $items['ordenar/%']['access arguments'] = array('ordenar contenido');
+
+    /**
+   * @todo access > usuarios NO VAAAA NI PATRAS ???? SOLUCIONAT AMB NODE ACCESS
+   */
+  $items['usuarios/%']['access arguments'] = array('ver apartado usuarios');
+  $items['usuarios']['access arguments'] = array('ver apartado usuarios');
+
+  $items['user/%user/shortcuts']['access callback']=FALSE;
+  $items['user/%user/socialmedia']['access callback']=FALSE;
+
+  /*PROVES*/
+  $items['user/%user/view']['access callback'] = 'user_access';
+  $items['user/%user/view']['access arguments'] = array('view hidden tabs');
+
+  //$items['user/%user/track']['access callback'] = 'user_access';
+  //$items['user/%user/track']['access arguments'] = array('view hidden tabs');
+
+  $items['search/user']['access callback'] = 'user_access';
+  $items['search/user']['access arguments'] = array('view hidden tabs');
+
+ // $path['source']=
+  //$items['hipicportal/anunciante_contrato_form']=$items['anunciante_contrato_form'];
+  //$items['hipicportal/profile-anunciante/%user/edit']=$items['profile-%/%user/edit'];
+
+  /* PROVES */
+
+}
+
+
+function hipicmedia_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['Resutado de búsqueda'] = array(
+      'label' => t('Resutado de búsqueda'),
+      'custom settings' => TRUE,
+  );
+}
+/******************************************************************************************
+
+NODE ACCESS
+
+/******************************************************************************************
+/******************************************************************************************/
+
+function hipicmedia_node_access($node, $op, $account) {
+  /*
+   * CONTROL ACCESO APARTADO USUARIOS
+   * NODOS PREGUNTAS
+   * */
+  if (is_object($node))  $path_alias = drupal_lookup_path('alias','node/'.$node->nid);
+  else $path_alias = drupal_lookup_path('alias',current_path());
+  //
+  //$path_alias = current_path();
+  //$path_alias = drupal_lookup_path('alias',$_GET['q']);
+
+  if ($op == 'view') {
+    if (strstr($path_alias,'usuarios') && !user_access('ver apartado usuarios')){
+      return NODE_ACCESS_DENY;
+    }
+    if ($node->type=='preguntas' && !user_access('ver apartado usuarios')){
+      return NODE_ACCESS_DENY;
+    }
+  }
+  return NODE_ACCESS_IGNORE;
+
+}
+
+
+
+
+/******************************************************************************************
+/******************************************************************************************
+/******************************************************************************************
+/******************************************************************************************
+* JWPLAYER VIMEO
+*/
+/**
+ * Implements hook_preprocess_HOOK
+ *
+ * Altera la configuración de jwplayer si el proveidor es VIMEO
+ * Activa el 'provider : vimeoprovider.swf ()
+ */
+function hipicmedia_preprocess_jw_player(&$variables) {
+  if (empty($variables['file_url'])) {
+    $variables['file_url'] = file_create_url($variables['file_object']->uri);
+  }
+
+  if (preg_match('/http:\/\/(www\.)?vimeo.com\/(\d+)($|\/)/',$variables['file_url'])){
+    $variables['config']['provider'] = file_create_url(libraries_get_path('jwplayer') . '/vimeoprovider.swf');
+    $variables['config']['vimeoprovider.hide_watch_later_button'] = true;
+    $variables['config']['vimeoprovider.hide_like_button'] = true;
+    $variables['config']['vimeoprovider.hide_playbar'] = true;
+  }
+}
+
+
+
+/******************************************************************************************
+
+
+
+FORMS
+
+
+ /******************************************************************************************
+/******************************************************************************************
+/******************************************************************************************
+*/
+
+
+/*
+ * FORMS LOGIN/REGISTER
+* */
+function hipicmedia_theme($existing, $type, $theme, $path) {
+  return array(
+      'user_login' => array(
+          'render element' => 'form',
+          'template' => 'login_form',
+          'path' => drupal_get_path('theme', 'hipic').'/templates/forms',
+      ),
+  );
+}
+
+  /*
+   function hipicmedia_preprocess_user_profile_form(&$variables) {
+  //drupal_set_message($variables);
+  dsm($variables);
+
+  //$variables['rendered'] = drupal_render($variables['form']['account']);
+  }
+  */
+
+
+function hipicmedia_form_user_profile_form_alter(&$form, &$form_state, $form_id){
+ $que_vista='listado_market_usuario';
+
+ $view = views_get_view($que_vista);
+ //$view->set_current_page($page);
+ //$arguments=array($variables['categoria'],$variables['sexo']); //@todo
+ //$view->set_arguments($arguments);
+ $llista_anuncis = $view->preview('block');
+
+ $form['field_s_he_leido_y_acepto_las_co']['und']['#title'] = l(t('I accept the conditions'),'legal', array('attributes' => array('target'=>'_blank')));
+
+ $form['#prefix']='<h3 class="ml640"> '.t('Your ads in HipicMarket').'</h3>';
+ $form['#prefix'].='<div id="form-edit-user">';
+ $form['#suffix']='</div>'.$llista_anuncis;
+ $form['#suffix'].='<div class="ml640"><div style="margin-bottom:10px;">'.t('To delete your ads, click on the bin icon').'</div>';
+ $form['#suffix'].='<a class="registre-bg-btn-redactar colorbox-nodexx" title="'.t('Post your Ad').'" href="/node/add/item-hipicmarket">'.t('Post your Ad').'</a>';
+ $form['#suffix'].='</div>';
+
+  $form['field_date_of_birth']['#element_validate'] = array('valida_18');
+ }
+
+/**
+ * VALIDA SI UNA FECHA TIENE MENOS DE 18AÑOS
+ *
+ * @param unknown_type $element
+ * @param unknown_type $form_state
+ * @param unknown_type $form
+ */
+function valida_18($element, &$form_state, $form) {
+  if (!isset($element['es'][0]['#value']['value']['year'])) {
+    form_error($element, t('Date of birth: You must be, at least, 18 years old'));
+    return;
+  }
+
+  $val=$element['es'][0]['#value']['value']['year'].'-';
+  $val.=$element['es'][0]['#value']['value']['month'].'-';
+  $val.=$element['es'][0]['#value']['value']['day'];
+  $date1 = new DateTime($val);
+  $date2 = new DateTime();
+  //$interval = $date1->diff($date2);
+  // if ($interval->y<18) form_error($element, t('Date of birth: You must be, at least, 18 years old'));
+  $interval = round(abs($date2->format('U') - $date1->format('U')) / (60*60*24*365));
+  if ($interval<18) form_error($element, t('Date of birth: You must be, at least, 18 years old'));
+
+  }
+
+function hipicmedia_form_user_login_alter(&$form, &$form_state, $form_id){
+  unset($form['title']);
+  unset($form['#title']);
+  $form['name']['#description'] = null;
+  $form['pass']['#description'] = null;
+}
+function hipicmedia_form_user_register_form_alter(&$form, &$form_state, $form_id){
+  $form['account']['name']['#description'] = null;
+  $form['account']['mail']['#description'] = null;
+  $form['account']['conf_mail']['#description'] = null;
+  $form['pass']['#description'] = null;
+  $form['account']['pass']['#description'] = null;
+  $form['field_s_he_leido_y_acepto_las_co']['und']['#title'] = l(t('I accept the conditions'),'legal', array('attributes' => array('target'=>'_blank')));
+}
+
+
+/*
+ *
+*ASIGNA ROL
+<?php
+$uid = 123;// User ID of user that you want to add role to.
+$role_name = 'Role to add'; // The name of the role to add.
+if ($role = user_role_load_by_name($role_name)) {
+user_multiple_role_edit(array($uid), 'add_role', $role->rid);
+}
+?>
+
+
+
+UNA ALTRE
+
+global $user;
+$key = array_search('your role', $user->roles);
+if ($key == FALSE) {
+$roles = user_roles(TRUE);
+$rid = array_search('your role', $roles);
+if ($rid != FALSE) {
+$new_role[$rid] = 'your role';
+user_save($user, array('roles' => $new_role));
+}
+}
+* */
+
+/*
+ * HELPER FUNCTIONS
+ * retorna los segmentos del path
+ */
+function hipicmedia_path_parts(){
+  return explode('/', current_path());
+}
+function hipicmedia_arg($index=0){
+  $parts = explode('/', current_path());
+
+  if (count($parts)>$index)  return $parts[$index];
+
+  return FALSE;
+}
+
+
+/**
+ * Simple wrapper function for drupal_mail() to avoid extraneous code.
+ */
+function hipicmedia_custom_drupal_mail($from = 'default_from', $to, $subject, $message) {
+  $my_module = 'hipicmedia';
+  $my_mail_token = microtime();
+  $from == 'hipicmedia@hipicmedia.com';
+
+  $message = array(
+      'id' => $my_module . '_' . $my_mail_token,
+      'to' => $to,
+      'subject' => $subject,
+      'body' => array($message),
+      'headers' => array(
+          'From' => $from,
+          'Sender' => $from,
+          'Return-Path' => $from,
+      ),
+  );
+  $system = drupal_mail_system($my_module, $my_mail_token);
+  $message = $system->format($message);
+  if ($system->mail($message)) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}
+
+function hipicmedia_views_pre_render(&$view) {
+/**/
+  global $language;
+  if ($language->language=='es') return;
+/* @todo taxonomy*/
+
+  $titrans['caballos']=tt('horses');
+  $titrans['ponys']=tt('ponys');
+  $titrans['potros']=tt('colts');
+  $titrans['accesorios']=tt('accesories');
+  $titrans['macho']=tt('male');
+  $titrans['hembra']=tt('female');
+  $titrans['castrado']=tt('castrate');
+  $titrans['miscelanea']=tt('miscellany');
+  $titrans['tutoriales']=tt('tutorials');
+  $titrans['entrevistas y reportajes']=tt('Interviews and reports');
+  $titrans['competiciones']=tt('competitions');
+  $titrans['disciplinas']=tt('disciplines');
+  $titrans['entretenimiento']=tt('entertainment');
+
+
+if (($view->name == 'hipicmarket' && $view->current_display == 'page')
+|| (($view->name == 'hipicmarket_l1' && $view->current_display == 'page'))
+|| (($view->name == 'galeria_de_videos' && $view->current_display == 'page'))
+|| (($view->name == 'videos_level_2_lista_canal_categoria_' && $view->current_display == 'page'))
+|| (($view->name == 'videos_level_2_simple' && $view->current_display == 'page'))
+
+) {
+
+
+  $title=$view->get_title();
+  $p1=$a1=hipicmedia_arg(1);
+  $p2=$a2=hipicmedia_arg(2);
+  //dsm("tit".$title=$view->get_title());
+  //dsm("sas".$rt=rt($a1));
+  //dsm("sas2".t($rt));
+
+  //$source = db_query("SELECT s.source FROM {locales_source} s LEFT JOIN {locales_target} t ON s.lid = t.lid AND t.language = ':l' WHERE t.translation = ':s' AND s.textgroup = 'default'", array(':l'=>'en',':s' => $a1))->fetchField();
+  //$p1 = $source ? $source : $a1;
+  if (isset($titrans[$a1])) $p1=$titrans[$a1];
+  if (isset($titrans[$a2])) $p2=$titrans[$a2];
+
+  $title=str_ireplace(hipicmedia_arg(1), $p1, $title);
+  $title=str_ireplace(hipicmedia_arg(2), $p2, $title);
+  $view->set_title($title);
+
+ }
+
+}
+
+/*
+function hipicmedia_views_pre_view(&$view) {
+
+  $titrans['HipicMarket > caballos']='HipicMarket > horses';
+
+if ($view->name == 'hipicmarket' && $view->current_display == 'page') {
+  dsm("AKIIII2222".$view->build_info['title']);
+  if (isset($view->build_info['title'])) $view->build_info['title'] =$titrans[$view->build_info['title']];
+}}
+  */
+function tt($t){return $t;};
+function rt($string) {
+  global $language;
+  $langcode = $language->language;
+
+  // 1. Lookup custom strings.
+  static $custom_strings;
+  if (!isset($custom_strings[$langcode])) {
+    $custom_strings[$langcode] = variable_get('locale_custom_strings_'. $langcode, array());
+  }
+  if ($source = array_search($string, $custom_strings[$langcode])) {
+    return $source;
+  }
+
+  // 2. Lookup locale translations.
+  if (!function_exists('locale') || $langcode == 'en') return $string;
+  if (variable_get('locale_cache_strings', 1) == 1) {
+    // Cache is on: this string is in the static cache for sure since we have its translated version.
+    $locale_t = locale();
+    if (isset($locale_t[$langcode]) && ($source = array_search($string, $locale_t[$langcode], TRUE))) {
+      return $source;
+    }
+    else {
+      return $string;
+    }
+  }
+  else {
+    // Cache is off: look it up in the database.
+    $source = db_result(db_query("SELECT s.source FROM {locales_source} s LEFT JOIN {locales_target} t ON s.lid = t.lid AND t.language = '%s' WHERE t.translation = '%s' AND s.textgroup = 'default'", $langcode, $string));
+    return $source ? $source : $string;
+  }
+}
+
+?>

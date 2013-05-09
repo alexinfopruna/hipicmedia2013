@@ -1,0 +1,6 @@
+2013-05-06 06:13:20 u67125225 49uDds-1UUiZN3h9l-014QZF |< REMOTE=95.61.24.86 SCRIPT=/openx_2.8.0/www/delivery/lg.php -- /usr/sbin/sendmail -t -i
+2013-05-06 06:13:20 u67125225 49uDds-1UUiZN3h9l-014QZF EE invalid mail addresses: "\"Sra. Ana Mu\303\261oz Museros\" <ana@hipicmedia.com>"
+2013-05-06 06:13:20 u67125225 49uDds-1UUiZN3h9l-014QZF EE no valid recipient addresses
+2013-05-06 08:27:53 u67125225 4AQTJq-1Ur24E2p2N-00Lokj |< REMOTE=83.247.136.44 SCRIPT=/index.php -- /usr/sbin/sendmail -t -i -fcontacto@hipicmedia.com
+2013-05-06 08:27:53 u67125225 4AQTJq-1Ur24E2p2N-00Lokj <= S=contacto@hipicmedia.com SZ=1336 D=0 SID=415555176
+2013-05-06 08:27:54 u67125225 4AQTJq-1Ur24E2p2N-00Lokj => esther.diazg@gencat.cat msmtp.kundenserver.de[172.19.35.7] 250 Message 0Lm8NJ-1Tzu5A3iSX-00Zd1B accepted by mreu0.kundenserver.de
